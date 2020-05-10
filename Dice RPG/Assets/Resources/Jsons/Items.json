@@ -1,0 +1,71 @@
+{
+	"myItems":[
+		{
+		"myName":"Dagger",
+		"myType":"Weapon",
+		"myDescription":"DAGGER\nOne-handed weapon",
+		"goldValue":"30",
+		"nbHands":"1",
+		"faceValues":["1","2","3","4"],
+		"effect":"Hit"
+		},
+		{
+		"myName":"Sword",
+		"myType":"Weapon",
+		"myDescription":"SWORD\nOne-handed weapon",
+		"goldValue":"50",
+		"nbHands":"1",
+		"faceValues":["1","2","3","4","5","6"],
+		"effect":"Hit"
+		},
+		{
+		"myName":"Axe",
+		"myType":"Weapon",
+		"myDescription":"AXE\nTwo-handed weapon",
+		"goldValue":"40",
+		"nbHands":"2",
+		"faceValues":["1","2","3","4","5","6","7","8"],
+		"effect":"Hit"
+		},
+		{
+		"myName":"Leather Armor",
+		"myType":"Equipment",
+		"mySubType":"Armor",
+		"myDescription":"LEATHER ARMOR\nReduces taken damage",
+		"target":"Body",
+		"goldValue":"60",
+		"damageReduction":"2"
+		},
+		{
+		"myName":"Glasses",
+		"myType":"Equipment",
+		"myDescription":"GLASSES\nTransforms all your 1 in higher values",
+		"target":"Head",
+		"goldValue":"30",
+		"effect":"Transform",
+		"effectValues":["1","3"],
+		"effectRange":"character"
+		},
+		{
+		"myName":"Wand of healing",
+		"myType":"Weapon",
+		"myDescription":"WAND OF HEALING\nHeals 1 if rolls 4 or higher",
+		"goldValue":"60",
+		"nbHands":"1",
+		"faceValues":["1","2","3","4","5","6"],
+		"effect":"Heals_If_Threshold",
+		"effectValues":["4","1"],
+		"effectRange":"item"
+		},
+		{
+		"myName":"Sting of weakening",
+		"myType":"Weapon",
+		"myDescription":"STING OF WEAKENING\nOne-handed weapon\nChances of weakening",
+		"goldValue":"20",
+		"nbHands":"1",
+		"faceValues":["1","1","1","1","1"],
+		"faceEffects":["","","","Weakening","Weakening"],
+		"effect":"Hit"
+		}
+	]
+}

@@ -1,0 +1,13 @@
+{
+	"myMobs":[
+		{
+		"myName":"Rat",
+		"pvMax":"5",
+		"faceValues":["1","2","3","4"],
+		"faceEffects":["Hit","Hit","Hit","Hit"],
+		"levelAppear":"1",
+		"lootChoices":"2",
+		"lootValue":"25"
+		}
+	]
+}
