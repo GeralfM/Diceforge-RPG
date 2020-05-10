@@ -28,4 +28,22 @@ public class DiceFace
 
         return answer;
     }
+
+    public string getEffectDescriptionFromFace()
+    {
+        string returnDescr = null;
+        switch (faceName)
+        {
+            case "Weak":
+                returnDescr = "WEAK :\n\nDice rolls have -1";
+                break;
+            case "Vulnerable":
+                returnDescr = "VULNERABLE :\n\nSuffers additional damage from hit";
+                break;
+            case "Strength":
+                returnDescr = "STRONG :\n\nDice rolls are higher";
+                break;
+        }
+        return returnDescr;
+    }
 }

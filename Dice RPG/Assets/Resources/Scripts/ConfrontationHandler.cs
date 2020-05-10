@@ -9,6 +9,7 @@ using System.Threading;
 public class ConfrontationHandler : MonoBehaviour
 {
     public Dictionary<string, CharacterContent> allMobs;
+    public WeightedBag mobPool = new WeightedBag();
     public Player thePlayer;
     public Character enemy;
     public int levelConfront;
@@ -17,12 +18,13 @@ public class ConfrontationHandler : MonoBehaviour
     public GameObject enemyName;
     public GameObject enemyPV;
     public GameObject enemyDiceDetail;
+    public GameObject enemyConditionsTab;
     public GameObject playerPV;
 
     public GameObject playerMainRoll;
     public GameObject playerSecondRoll;
     public GameObject enemyMainRoll;
-
+    
     public GameObject diceFacePrefab;
 
     public GameObject attackButton;
@@ -38,7 +40,7 @@ public class ConfrontationHandler : MonoBehaviour
 
     public void InitNewConfront()
     {
-        levelConfront++;
+        PrepareLevelPool();
         enemy = ChooseEnemy();
 
         // Displaying info
@@ -48,6 +50,7 @@ public class ConfrontationHandler : MonoBehaviour
         displayPV(enemy.myInfo.pv, false);
 
         enemyDiceDetail.GetComponent<ObjectDisplayer>().DisplayDice(enemy.myBaseAttackDice);
+        enemy.DisplayConditions();
 
         // Choosing first attacker. To be improved
         playerAttacking = true;
@@ -58,10 +61,10 @@ public class ConfrontationHandler : MonoBehaviour
 
     public void NewRound()
     {
-        thePlayer.ReduceConditionDuration(); enemy.ReduceConditionDuration();
         enemyDiceDetail.GetComponent<ObjectDisplayer>().DisplayDice(enemy.myBaseAttackDice);
 
         SetRoles(playerAttacking);
+
         if (playerAttacking) { SetPlayerChoices(true); }
         else { StartCoroutine(Attack()) ; }
     }
@@ -72,7 +75,14 @@ public class ConfrontationHandler : MonoBehaviour
         DisplayRoll(playerSecondRoll, false);
         DisplayRoll(enemyMainRoll, false);
 
-        if (thePlayer.myInfo.pv <= 0 || enemy.myInfo.pv <= 0) { GetComponent<GameHandler>().EndOfConfrontation(thePlayer.myInfo.pv <= 0); }
+        thePlayer.ReduceConditionDuration(); enemy.ReduceConditionDuration();
+        thePlayer.DisplayConditions(); enemy.DisplayConditions();
+
+        if (thePlayer.myInfo.pv <= 0 || enemy.myInfo.pv <= 0) // End of combat condition
+        {
+            thePlayer.EndCombatDurationEffect();
+            GetComponent<GameHandler>().EndOfConfrontation(thePlayer.myInfo.pv <= 0);
+        }
         else { NewRound(); }
     }
 
@@ -89,24 +99,40 @@ public class ConfrontationHandler : MonoBehaviour
 
         List<DiceFace> att = attacker.getAttack();
         List<int> attValues = new List<int> { 0 };
+        List<int> selfDmgValues = new List<int> { 0 };
         List<int> healValues = new List<int> { 0 }; // s'il y a de plus en plus de possibilités, un dictionnaire pourrait s'avérer nécessaire
 
+        // APPLYING BASIC HIT
         foreach (DiceFace aFace in att) {
             foreach(Effect eff in aFace.effects)
             {
                 if (eff.nameEffect == "Heal") { healValues.Add(eff.effectValues[0]); }
-                else if (eff.nameEffect == "Hit") { attValues.Add(aFace.value); }
-                else if (eff.nameEffect == "Weakening") { defendant.AddCondition(new Effect("Weak", 2)); }
+                else if (eff.nameEffect == "Hit") {
+                    if (aFace.value >0) { attValues.Add(aFace.value); }
+                    else if (aFace.value < 0) {  selfDmgValues.Add(-aFace.value); }
+                }
             }
         }
         
         DisplayRoll(playerAttacking ? playerMainRoll : enemyMainRoll, true, att[0]);
-        enemyDiceDetail.GetComponent<ObjectDisplayer>().DisplayDice(enemy.myBaseAttackDice);
-
         if (att.Count==2) { DisplayRoll(playerSecondRoll, true, att[1]); };
 
-        defendant.takeHit(attValues.Sum());
-        attacker.Heal(healValues.Sum());
+        if (attValues.Sum() > 0) { defendant.takeHit(attValues.Sum()); }
+        if (healValues.Sum() > 0) { attacker.Heal(healValues.Sum()); }
+        if (selfDmgValues.Sum() > 0) { attacker.takeHit(selfDmgValues.Sum()); }
+
+        // NOW APPLYING EFFECTS
+        foreach (DiceFace aFace in att)
+        {
+            foreach (Effect eff in aFace.effects)
+            {
+                if (aFace.value > 0 && eff.nameEffect == "Weakening") { defendant.AddCondition(new Effect("Weak", 2)); }
+                else if (aFace.value > 0 && eff.nameEffect == "Vulnerability")
+                { Effect newEff = new Effect("Vulnerable", new List<int> { 1 }, "character"); newEff.duration = -2; defendant.AddCondition(newEff); }
+            }
+        }
+        defendant.DisplayConditions();
+        enemyDiceDetail.GetComponent<ObjectDisplayer>().DisplayDice(enemy.myBaseAttackDice);
 
         displayPV(defendant.myInfo.pv, !playerAttacking);
         displayPV(attacker.myInfo.pv, playerAttacking);
@@ -148,18 +174,36 @@ public class ConfrontationHandler : MonoBehaviour
         attackButton.SetActive(display);
     }
 
-    public Character ChooseEnemy()
-    {
-        Character theEnemy = new Character(allMobs["Rat"]);
-        theEnemy.SetRarity(levelConfront);
-        return theEnemy;
-    }
-
     public void displayPV(int amount, bool isPlayer)
     {
         GameObject target = isPlayer ? playerPV : enemyPV;
 
-        string bonusText = isPlayer ? (" / "+thePlayer.myInfo.pvMax) : "" ;
+        string bonusText = isPlayer ? (" / " + thePlayer.myInfo.pvMax) : "";
         target.GetComponent<Text>().text = amount + bonusText;
     }
+
+    // MOB GENERATION
+
+    public void PrepareLevelPool()
+    {
+        mobPool.MultiplyWeightAll(0.7f);
+
+        levelConfront++;
+
+        foreach(string name in allMobs.Keys)
+            { if(allMobs[name].levelAppear == levelConfront) { mobPool.AddElement(name, allMobs[name].presenceRate); } }
+    }
+
+    public Character ChooseEnemy()
+    {
+        string nameEnemy = mobPool.Draw(false);
+
+        Character theEnemy = new Character(allMobs[nameEnemy]);
+        theEnemy.SetRarity(levelConfront);
+        theEnemy.myConditionsDisplayer = enemyConditionsTab.GetComponent<ObjectDisplayer>();
+
+        return theEnemy;
+    }
+
+    
 }

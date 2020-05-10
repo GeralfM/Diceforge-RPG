@@ -10,6 +10,8 @@ public class Dice
     public Character myOwner;
     public Item myItem;
 
+    public bool isConditionDice = false; // for conditions only
+
     public System.Random ran = new System.Random();
 
     public Dice(List<int> fValues, List<string> fEffects)
@@ -41,9 +43,19 @@ public class Dice
             }
         }
         return selected;
-    } 
+    }
 
     public DiceFace getFaceSummary(DiceFace aFace)
+    {
+        if (!isConditionDice) { return getCopyFaceSummary(aFace); }
+        else
+        {
+            aFace.mySprites = new List<Sprite>();  //new List<Sprite> { Resources.Load<Sprite>("Images/Dice_nothing.png") };
+            aFace.mySprites.Add(Resources.Load<Sprite>("Images/Condition_" + aFace.faceName.ToLower() + ".png"));
+            return aFace;
+        }
+    }
+    public DiceFace getCopyFaceSummary(DiceFace aFace)
     {
         DiceFace finalFace = new DiceFace(aFace.value);
 
@@ -80,7 +92,7 @@ public class Dice
                 finalFace.effects.Add(new Effect( "Heal", new List<int> { finalFace.value >= eff.effectValues[0] ? eff.effectValues[1] : 0 }, null ));
             }
             // Effets de conditions
-            else if ( new List<string> { "Hit", "Weakening" }.Contains(eff.nameEffect)) {
+            else if ( new List<string> { "Hit", "Weakening" , "Vulnerability" }.Contains(eff.nameEffect)) {
                 finalFace.effects.Add(new Effect(eff.nameEffect, null, null));
                 finalFace.mySprites.Add( Resources.Load<Sprite>("Images/Dice_" + eff.nameEffect.ToLower() + ".png") );
             }
@@ -95,7 +107,7 @@ public class Dice
     {
         int returnValue = 0;
         if (new List<string> { "Hit" }.Contains(nameEff)) { returnValue = -2; }
-        else if (new List<string> { "Weakening" }.Contains(nameEff)) { returnValue = -1; }
+        else if (new List<string> { "Weakening","Vulnerability" }.Contains(nameEff)) { returnValue = -1; }
         // Effects under 0 have no importance in ordering
         else if (new List<string> { "Transform" }.Contains(nameEff)) { returnValue = 1; }
         else if (new List<string> { "Weak", "Strength" }.Contains(nameEff)) { returnValue = 2; }

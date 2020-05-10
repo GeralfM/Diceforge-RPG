@@ -51,7 +51,7 @@ public class Player : Character
     public override void takeHit(int value)
     {
         int dmgReduction = (myBody.equippedItem != null) ? myBody.equippedItem.myInfo.damageReduction : 0;
-        myInfo.pv -= Mathf.Max( value - dmgReduction, 0 );
+        myInfo.pv -= Mathf.Max( value - dmgReduction + SearchEffectValue("Vulnerable"), 0 );
     }
 
     public override List<Effect> GetAllEffects() // all ACTIVE effects only !

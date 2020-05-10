@@ -15,7 +15,5 @@ public class Effect
     public Effect(Effect eff)
     {
         nameEffect = eff.nameEffect; duration = eff.duration; rangeEffect = eff.rangeEffect;
-        //effectValues = new List<int>();
-        //foreach(int elt in eff.effectValues) { effectValues.Add(elt); }
     }
 }

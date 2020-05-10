@@ -4,10 +4,31 @@
 		"myName":"Rat",
 		"pvMax":"5",
 		"faceValues":["1","2","3","4"],
-		"faceEffects":["Hit","Hit","Hit","Hit"],
+		"faceEffects":["","","",""],
 		"levelAppear":"1",
+		"presenceRate":"100",
 		"lootChoices":"2",
 		"lootValue":"25"
+		},
+		{
+		"myName":"Slime",
+		"pvMax":"10",
+		"faceValues":["1","1","1","1","1","1"],
+		"faceEffects":["","","","","Weakening","Vulnerability"],
+		"levelAppear":"10",
+		"presenceRate":"50",
+		"lootChoices":"1",
+		"lootValue":"30"
+		},
+		{
+		"myName":"Rat pack",
+		"pvMax":"10",
+		"faceValues":["1","2","3","4"],
+		"faceEffects":["","","",""],
+		"levelAppear":"1",
+		"presenceRate":"100",
+		"lootChoices":"2",
+		"lootValue":"50"
 		}
 	]
 }

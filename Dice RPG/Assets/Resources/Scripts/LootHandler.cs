@@ -124,9 +124,9 @@ public class LootHandler : MonoBehaviour
                 case "Rare":
                     newItem.myInfo.goldValue *= 2; break;
                 case "Epic":
-                    newItem.myInfo.goldValue += 3; break;
+                    newItem.myInfo.goldValue *= 3; break;
                 case "Legendary":
-                    newItem.myInfo.goldValue += 5; break;
+                    newItem.myInfo.goldValue *= 5; break;
             }
             newItem.myInfo.myDescription += "\n" + rarityItem.ToUpper();
         }

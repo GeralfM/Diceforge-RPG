@@ -29,6 +29,7 @@ public class GameHandler : MonoBehaviour
     public GameObject leftHand;
     public GameObject rightHand;
     public GameObject body;
+    public GameObject playerConditionsTab;
 
     public GameObject cheatCodeButton;
 
@@ -57,7 +58,7 @@ public class GameHandler : MonoBehaviour
 
         thePlayer = new Player();
         initializePlayer();
-        myCombatHandler.thePlayer = thePlayer; myCombatHandler.levelConfront = 0;
+        myCombatHandler.thePlayer = thePlayer; myCombatHandler.levelConfront = 0; myCombatHandler.mobPool = new WeightedBag();
         myUpgradeHandler.thePlayer = thePlayer;
         myLootHandler.thePlayer = thePlayer;
 
@@ -85,6 +86,8 @@ public class GameHandler : MonoBehaviour
     public void TerminatePlayer()
     {
         foreach (EquipSlot elt in new List<EquipSlot> { thePlayer.myHead, thePlayer.myLeftHand, thePlayer.myRightHand, thePlayer.myBody }) { elt.UnequipItem(); }
+        thePlayer.myConditions = new List<Effect>();
+        thePlayer.DisplayConditions();
         DisplayInventory(false);
     }
 
@@ -148,7 +151,9 @@ public class GameHandler : MonoBehaviour
         thePlayer.myLeftHand = leftHand.GetComponent<EquipSlot>();
         thePlayer.myRightHand = rightHand.GetComponent<EquipSlot>();
         thePlayer.myBody = body.GetComponent<EquipSlot>();
-        
+
+        thePlayer.myConditionsDisplayer = playerConditionsTab.GetComponent<ObjectDisplayer>();
+
         foreach (string elt in new List<string> { "Dagger" }) // only one dagger
         {
             Item newItem = new Item(myData.allItems[elt]);

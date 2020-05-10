@@ -14,6 +14,11 @@ public class WeightedBag
     public void AddWeight(string name, float weight) { content[name] += weight; }
     public void MultiplyWeight(string name, float factor) { content[name] *= factor; }
 
+    public void MultiplyWeightAll(float factor)
+    {
+        content.Keys.ToList().ForEach(x => MultiplyWeight(x, factor)); //DescribeBag();
+    }
+
     public string Draw(bool isProba) // isProba to draw from 0-1 range, else to draw from weighted collection
     {
         float accu = 0f;

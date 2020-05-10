@@ -57,7 +57,7 @@ public class UpgradeHandler : MonoBehaviour
         }
         foreach(EquipSlot slot in new List<EquipSlot> { thePlayer.myHead, thePlayer.myLeftHand, thePlayer.myRightHand, thePlayer.myBody })
         {
-            if (slot.equippedItem != null && slot.equippedItem.myDice.myFaces.Count > 0) { toBeDisplayed.Add(slot.equippedItem); }
+            if (slot.equippedItem != null && !(UpgradeTab.activeSelf && slot.equippedItem.myDice.myFaces.Count == 0)) { toBeDisplayed.Add(slot.equippedItem); }
         }
 
         myItemDisplayer.page = 0;

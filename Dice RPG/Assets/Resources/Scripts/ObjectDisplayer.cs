@@ -87,13 +87,19 @@ public class ObjectDisplayer : MonoBehaviour
             newObject.transform.localPosition = basicPrefab.transform.localPosition + new Vector3(0 + (count % rowLength) * xStep, 0 - (int)(count / rowLength) * yStep, 0);
             if (newObject.GetComponent<InteractableElt>() != null) { newObject.GetComponent<InteractableElt>().myFaceRef = face; } // for upgradeHandler
 
-            // Test dans le cas d'un superprefab Upgrade
-            if (!isUpgraded) { newObject.transform.Find("Text").GetComponent<Text>().text = (face.faceName != null) ? face.faceName : finalFace.value + ""; }
-            else {
+            // Test dans le cas d'un superprefab Upgrade ou d'un ConditionDice
+            if (!isUpgraded && !dice.isConditionDice) { newObject.transform.Find("Text").GetComponent<Text>().text = (face.faceName != null) ? face.faceName : finalFace.value + ""; }
+            else if (!dice.isConditionDice)
+            {
                 newObject.transform.Find("DiceFacePrefab").Find("Text").GetComponent<Text>().text = finalFace.value + "";
                 newObject.transform.Find("Button").GetComponent<InteractableElt>().myFaceRef = face;
                 newObject.transform.Find("Button").Find("Text").GetComponent<Text>().text = "Buy : " + ( face.upgradeCost * Mathf.Pow(2,dice.myItem.myInfo.improved)) + " gold";
                 newObject.transform.Find("Button").GetComponent<Button>().interactable = dice.myOwner.myInfo.gold >= ( face.upgradeCost * Mathf.Pow(2, dice.myItem.myInfo.improved));
+            }
+            else if (face.value != 0) // ConditionDice with value. Il doit y avoir un moyen de factoriser
+            {
+                newObject.transform.Find("Text").GetComponent<Text>().text = finalFace.value + "";
+                newObject.transform.Find("Text").gameObject.SetActive(true);
             }
 
             foreach(Sprite aSpr in finalFace.mySprites)

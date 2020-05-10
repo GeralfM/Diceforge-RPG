@@ -33,10 +33,14 @@ public class InteractableElt : MonoBehaviour
         else { this.transform.Find("RarityGem").gameObject.SetActive(false); }
     }
 
-    public void DisplayDescription(bool display)
+    public void DisplayDescription(bool display) // C'est très brouillon
     {
-        if (myItemRef.myInfo.myDescription != null) gameObject.transform.Find("DescrBackground").gameObject.SetActive(display);
-        if (display) { gameObject.transform.Find("DescrBackground").Find("DescrText").GetComponent<Text>().text = myItemRef.myInfo.myDescription; }
+        if (myFaceRef!=null || myItemRef.myInfo.myDescription != null) gameObject.transform.Find("DescrBackground").gameObject.SetActive(display);
+        if (display) {
+            gameObject.transform.Find("DescrBackground").Find("DescrText").GetComponent<Text>().text = (myFaceRef != null)? 
+                myFaceRef.getEffectDescriptionFromFace() : 
+                myItemRef.myInfo.myDescription;
+        }
     }
 
     public void TryEquip()
