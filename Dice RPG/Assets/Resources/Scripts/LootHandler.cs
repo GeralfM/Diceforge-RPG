@@ -52,6 +52,7 @@ public class LootHandler : MonoBehaviour
                     newItem.SetOwner(thePlayer);
                     break;
             }
+            if (newItem.myInfo.myType == "Weapon" && Random.Range(0f, 1f) < 0.1f) { newItem.SetCurse(); }
             choices.Add(newItem);
         }
 

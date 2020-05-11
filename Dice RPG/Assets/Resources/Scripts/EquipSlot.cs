@@ -20,6 +20,7 @@ public class EquipSlot : MonoBehaviour
             this.transform.Find("RarityGem").GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/Gem_" + equippedItem.myInfo.myRarity + ".png");
             this.transform.Find("RarityGem").gameObject.SetActive(true);
         }
+        if (equippedItem.myInfo.cursed) { this.transform.Find("CurseSymbol").gameObject.SetActive(true); }
     }
     public void UnequipItem()
     {
@@ -36,6 +37,7 @@ public class EquipSlot : MonoBehaviour
             thePlayer.UpdateVisualInfo();
             GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/UI_Mask.png");
             this.transform.Find("RarityGem").gameObject.SetActive(false);
+            this.transform.Find("CurseSymbol").gameObject.SetActive(false);
 
             GameObject.Find("Background").GetComponent<GameHandler>().DisplayInventory(true);
         }

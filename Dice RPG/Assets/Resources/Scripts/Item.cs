@@ -28,4 +28,11 @@ public class Item
         owner = master;
         if (myDice != null) { myDice.myOwner = master; }
     }
+
+    public void SetCurse()
+    {
+        myInfo.cursed = true;
+        myDice.myFaces[0].effects.Add(new Effect("Cursed", new List<int> { -3 }, "Face")); 
+        myDice.myFaces[myDice.myFaces.Count-1].effects.Add(new Effect("Cursed", new List<int> { 3 }, "Face"));
+    }
 }

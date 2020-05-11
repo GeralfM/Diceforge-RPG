@@ -16,11 +16,14 @@ public class InteractableElt : MonoBehaviour
     {
         Sprite resSprite = Resources.Load<Sprite>("Images/" + myItemRef.myInfo.myName + ".png");
         GetComponent<Image>().sprite = resSprite;
+        DisplayRarityGem(true);
     }
     public void HideSprite()
     {
         Sprite resSprite = Resources.Load<Sprite>("Images/UI_Mask.png");
         GetComponent<Image>().sprite = resSprite;
+        DisplayRarityGem(false);
+
         myItemRef = null; myFaceRef = null; // Risqué
     }
     public void DisplayRarityGem(bool display)
@@ -32,10 +35,15 @@ public class InteractableElt : MonoBehaviour
         }
         else { this.transform.Find("RarityGem").gameObject.SetActive(false); }
     }
+    public void DisplayCurse(bool display)
+    {
+        if (myItemRef != null && myItemRef.myInfo.cursed && display) { this.transform.Find("CurseSymbol").gameObject.SetActive(true); }
+        else { this.transform.Find("CurseSymbol").gameObject.SetActive(false); }
+    }
 
     public void DisplayDescription(bool display) // C'est très brouillon
     {
-        if (myFaceRef!=null || myItemRef.myInfo.myDescription != null) gameObject.transform.Find("DescrBackground").gameObject.SetActive(display);
+        if (myFaceRef != null || (myItemRef!=null && myItemRef.myInfo.myDescription != null)) { gameObject.transform.Find("DescrBackground").gameObject.SetActive(display); }
         if (display) {
             gameObject.transform.Find("DescrBackground").Find("DescrText").GetComponent<Text>().text = (myFaceRef != null)? 
                 myFaceRef.getEffectDescriptionFromFace() : 

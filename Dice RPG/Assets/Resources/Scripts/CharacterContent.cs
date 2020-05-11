@@ -14,6 +14,7 @@ public class CharacterContent
 
     public List<int> faceValues;
     public List<string> faceEffects;
+    public List<int> faceSplits;
     public int levelAppear;
     public int presenceRate;
     public int lootChoices;
@@ -24,7 +25,7 @@ public class CharacterContent
     {
         myName = toCopy.myName;
         pvMax = toCopy.pvMax; gold = toCopy.gold;
-        faceValues = toCopy.faceValues; faceEffects = toCopy.faceEffects;
+        faceValues = toCopy.faceValues; faceEffects = toCopy.faceEffects; faceSplits = toCopy.faceSplits;
         levelAppear = toCopy.levelAppear; presenceRate = toCopy.presenceRate;
         lootChoices = toCopy.lootChoices; lootValue = toCopy.lootValue;
     }

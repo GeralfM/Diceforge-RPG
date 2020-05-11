@@ -10,6 +10,7 @@ public class DiceFace
     public List<Sprite> mySprites = new List<Sprite> { Resources.Load<Sprite>("Images/Dice_nothing.png") };
 
     public string faceName; // for loot dice only
+    public bool alreadySummarized = false;
 
     public DiceFace(int val) { value = val; upgradeCost = 10 * (val + 1); }
     public DiceFace(string aName) { faceName = aName; mySprites.Add(Resources.Load<Sprite>("Images/Dice_blue.png")); }

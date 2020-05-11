@@ -64,6 +64,9 @@ public class GameHandler : MonoBehaviour
 
         sceneProb.AddElement("Heal", 0f); sceneProb.AddElement("Upgrade", 0f);
 
+        //currentScene = upgradeScene;
+        //upgradeScene.SetActive(true);
+        //myUpgradeHandler.InitUpgradeScene();
         currentScene = confrontScene;
         confrontScene.SetActive(true);
         myCombatHandler.InitNewConfront();
@@ -79,7 +82,7 @@ public class GameHandler : MonoBehaviour
             sceneProb.AddWeight("Heal", 0.05f); sceneProb.AddWeight("Upgrade", 0.05f);
 
             currentScene = lootScene;
-            lootScene.SetActive(true);
+            lootScene.SetActive(true); DisplayInventory(false);
             myLootHandler.InitializeLoot(myCombatHandler.enemy);
         }
     }
@@ -168,7 +171,7 @@ public class GameHandler : MonoBehaviour
     {
         foreach (string elt in new List<string> { "Sword", "Axe", "Leather Armor", "Glasses", "Wand of healing", "Sting of weakening" })
         {
-            Item newItem = new Item(myData.allItems[elt]);
+            Item newItem = new Item(myData.allItems[elt]); 
             thePlayer.AddToInventory(newItem);
         }
         thePlayer.DisplayInventory();

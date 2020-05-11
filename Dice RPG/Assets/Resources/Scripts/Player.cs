@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+using UnityEngine.EventSystems;
+
 public class Player : Character
 {
     public List<Item> myInventory = new List<Item>();
@@ -41,7 +43,8 @@ public class Player : Character
                 if (elt.equippedItem != null)
                 {
                     DiceFace tryFace = elt.equippedItem.myDice.rollDice();
-                    if (elt == myRightHand) { while (tryFace.value > 6) { tryFace = elt.equippedItem.myDice.rollDice(); } } // Attention au potentiel de boucle infinie !
+                    if (elt == myRightHand && elt.equippedItem.myDice.GetMinValue()<=6)
+                        { while (tryFace.value > 6) { tryFace = elt.equippedItem.myDice.rollDice(); } }
                     values.Add(tryFace);
                 }
             }
@@ -136,6 +139,15 @@ public class Player : Character
         myPV.GetComponent<Text>().text = myInfo.pv + " / " + myInfo.pvMax;
         myArmorStat.GetComponent<Text>().text = (myBody.equippedItem != null) ? myBody.equippedItem.myInfo.damageReduction + "" : "";
         myGold.GetComponent<Text>().text = myInfo.gold + "";
+    }
+
+    public void SetSlotInteractability(bool interact)
+    {
+        foreach(EquipSlot elt in new List<EquipSlot> { myHead, myLeftHand, myRightHand, myBody})
+        {
+            elt.GetComponent<EventTrigger>().enabled = interact;
+            elt.GetComponent<Button>().enabled = interact;
+        }
     }
 
 }

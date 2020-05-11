@@ -13,6 +13,7 @@ public class ItemContent
     public int goldValue;
     public string myRarity; // not from json for now
     public int improved;
+    public bool cursed=false;
 
     // WEAPONS
     public int nbHands;
@@ -30,7 +31,7 @@ public class ItemContent
     public ItemContent(ItemContent toCopy)
     {
         myName = toCopy.myName; myType = toCopy.myType; mySubType = toCopy.mySubType; myDescription = toCopy.myDescription;
-        goldValue = toCopy.goldValue; improved = toCopy.improved;
+        goldValue = toCopy.goldValue; improved = toCopy.improved; cursed = toCopy.cursed;
         nbHands = toCopy.nbHands; faceValues = toCopy.faceValues; faceEffects = toCopy.faceEffects;
         target = toCopy.target; damageReduction = toCopy.damageReduction; effect = toCopy.effect; effectValues = toCopy.effectValues; effectRange = toCopy.effectRange;
     }

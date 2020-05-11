@@ -20,6 +20,8 @@ public class Character
 
         if (myInfo.faceValues != null) {
             myBaseAttackDice = new Dice(myInfo.faceValues, myInfo.faceEffects);
+            myBaseAttackDice.faceSplits = myInfo.faceSplits;
+
             myBaseAttackDice.myFaces.ForEach(x => x.effects.Add( new Effect("Hit", null, null) ));
             myBaseAttackDice.myOwner = this;
         }
@@ -44,8 +46,14 @@ public class Character
         List<DiceFace> values = new List<DiceFace>();
 
         if (myBaseAttackDice != null) {
-            DiceFace aFace = myBaseAttackDice.rollDice();
-            values.Add(aFace);
+
+            List<int> rangeList = new List<int> { 0 };
+            rangeList.AddRange(myBaseAttackDice.faceSplits); rangeList.Add(myBaseAttackDice.myFaces.Count);
+            
+            for(int i=0; i<rangeList.Count-1; i++)
+            {
+                values.Add(myBaseAttackDice.rollFromRange(rangeList[i], rangeList[i + 1]));
+            }
         }
         else { values.Add(new DiceFace(0)); }
         

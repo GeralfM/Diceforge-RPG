@@ -120,8 +120,10 @@ public class UpgradeHandler : MonoBehaviour
     {
         if (currentlySelectedFace == null)
         {
+            bool isCursed = false; target.myFaceRef.effects.ForEach(x => isCursed = isCursed || (x.nameEffect == "Cursed"));
+
             DisplayFace(target.gameObject, isHovered);
-            if (isHovered) { myUpgradedFacesDisplayer.DisplayDice(GenerateUpgrades(target.myFaceRef)); }
+            if (isHovered && !isCursed) { myUpgradedFacesDisplayer.DisplayDice(GenerateUpgrades(target.myFaceRef)); }
             else { myUpgradedFacesDisplayer.Hide(); }
         }
     }
@@ -186,7 +188,7 @@ public class UpgradeHandler : MonoBehaviour
         {
             foreach(Effect eff in aFace.effects)
             {
-                if (!otherEffets.Contains(eff.nameEffect) && !toUpgrade.myEffectNames().Contains(eff.nameEffect) )
+                if (!otherEffets.Contains(eff.nameEffect) && !toUpgrade.myEffectNames().Contains(eff.nameEffect) && eff.nameEffect!="Cursed")
                 {
                     otherEffets.Add(eff.nameEffect);
                     newFace = new DiceFace(toUpgrade);
@@ -243,10 +245,15 @@ public class UpgradeHandler : MonoBehaviour
 
     public void PrepareToSell(bool display)
     {
-        ButtonSell.transform.Find("Text").GetComponent<Text>().text = display?
-            "Sell selected item for "+ (currentlySelectedItem.myItemRef.myInfo.goldValue / 2) +" gold":
-            "Select an item to sell";
-        ButtonSell.GetComponent<Button>().interactable = display;
+        bool canBeSold = display && !currentlySelectedItem.myItemRef.myInfo.cursed;
+        string aText = null;
+
+        if (display && currentlySelectedItem.myItemRef.myInfo.cursed) { aText = "Cursed items can't be sold !"; }
+        else if (display) { aText = "Sell selected item for " + (currentlySelectedItem.myItemRef.myInfo.goldValue / 2) + " gold"; }
+        else { aText = "Select an item to sell"; }
+
+        ButtonSell.transform.Find("Text").GetComponent<Text>().text = aText;
+        ButtonSell.GetComponent<Button>().interactable = canBeSold;
     }
     public void SellItem()
     {
@@ -270,9 +277,11 @@ public class UpgradeHandler : MonoBehaviour
     public void PrepareToMelt(bool display)
     {
         if (display && currentlySelectedItem.myItemRef.myInfo.myRarity != "Legendary") {
-            toMelt.myItemRef = currentlySelectedItem.myItemRef; toMelt.DisplaySprite(); toMelt.DisplayRarityGem(true);
+            toMelt.myItemRef = currentlySelectedItem.myItemRef; toMelt.DisplaySprite(); toMelt.DisplayCurse(true);
 
+            // Generate melted overview
             Item newItem = new Item(myItemGenerator.allItems[currentlySelectedItem.myItemRef.myInfo.myName]);
+            newItem.SetOwner(thePlayer);
             string rarity = (currentlySelectedItem.myItemRef.myInfo.myRarity == null) ? "Rare" :
                 (currentlySelectedItem.myItemRef.myInfo.myRarity == "Rare") ? "Epic" : "Legendary";
             myItemGenerator.SetRarity(newItem, rarity);
@@ -290,8 +299,8 @@ public class UpgradeHandler : MonoBehaviour
             if(meltCollection.Count>=3) { meltButton.GetComponent<Button>().interactable = true; }
         }
         else {
-            toMelt.HideSprite(); toMelt.DisplayRarityGem(false);
-            melted.HideSprite(); melted.DisplayRarityGem(false);
+            toMelt.HideSprite(); toMelt.DisplayCurse(false);
+            melted.HideSprite(); 
             meltButton.GetComponent<Button>().interactable = false;
 
             DisplayMeltingIngredients(false);
@@ -304,12 +313,14 @@ public class UpgradeHandler : MonoBehaviour
         {
             meltMenu.SetActive(true);
             meltCollectionDisplayer.DisplayItemCollection(meltCollection);
+            thePlayer.SetSlotInteractability(false);
         }
         else
         {
             meltMenu.SetActive(false);
             meltCollectionDisplayer.Hide();
             meltSelection = new List<Item>();
+            thePlayer.SetSlotInteractability(true);
         }
     }
 
@@ -321,6 +332,10 @@ public class UpgradeHandler : MonoBehaviour
     }
     public void Melt(List<Item> toMelt)
     {
+        // Check if cursed
+        int nbCurse = 0;
+        toMelt.ForEach(x => nbCurse += x.myInfo.cursed ? 1 : 0);
+        if( Random.Range(0f,1f) < nbCurse/3f ) { melted.myItemRef.SetCurse(); }
         // Check if equiped
         foreach (EquipSlot slot in new List<EquipSlot> { thePlayer.myHead, thePlayer.myLeftHand, thePlayer.myRightHand, thePlayer.myBody })
         {

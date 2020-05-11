@@ -7,6 +7,7 @@ using System.Linq;
 public class Dice
 {
     public List<DiceFace> myFaces = new List<DiceFace>();
+    public List<int> faceSplits;
     public Character myOwner;
     public Item myItem;
 
@@ -23,11 +24,13 @@ public class Dice
             myFaces.Add(newFace);
         }
     }
+    public Dice(List<DiceFace> faces) { myFaces = faces; }
     public Dice(List<string> nameFaces)
     {
         for (int i = 0; i < nameFaces.Count; i++) { myFaces.Add(new DiceFace(nameFaces[i])); }
     }
 
+    public DiceFace rollFromRange(int idmin, int idmax) { return getFaceSummary(myFaces[Random.Range(idmin, idmax)]);  }
     public DiceFace rollDice(){ return getFaceSummary(myFaces[Random.Range(0, myFaces.Count)]); }
     public List<DiceFace> rollDistinctFaces(int N) // only for loot dice for now
     { 
@@ -47,10 +50,11 @@ public class Dice
 
     public DiceFace getFaceSummary(DiceFace aFace)
     {
-        if (!isConditionDice) { return getCopyFaceSummary(aFace); }
+        if (aFace.alreadySummarized) { return aFace; }
+        else if (!isConditionDice) { return getCopyFaceSummary(aFace); }
         else
         {
-            aFace.mySprites = new List<Sprite>();  //new List<Sprite> { Resources.Load<Sprite>("Images/Dice_nothing.png") };
+            aFace.mySprites = new List<Sprite>();
             aFace.mySprites.Add(Resources.Load<Sprite>("Images/Condition_" + aFace.faceName.ToLower() + ".png"));
             return aFace;
         }
@@ -68,11 +72,11 @@ public class Dice
         if (allEffects.Count > 1)
         { allEffects.Sort(delegate (Effect a, Effect b) { return GetEffectPriority(a.nameEffect).CompareTo(GetEffectPriority(b.nameEffect)); }); }
 
-        foreach(Effect eff in allEffects) // Les effets se résolvent dans l'ordre suivant :
+        foreach (Effect eff in allEffects) // Les effets se résolvent dans l'ordre suivant :
         {
             // Effets de transformation
             if (eff.nameEffect == "Transform" && finalFace.value == eff.effectValues[0]) {
-                finalFace.value = eff.effectValues[1]; 
+                finalFace.value = eff.effectValues[1];
                 finalFace.mySprites.Add( Resources.Load<Sprite>("Images/Dice_transformed.png") );
             }
             else if (eff.nameEffect == "Weak")
@@ -82,8 +86,13 @@ public class Dice
             }
             else if (eff.nameEffect == "Strength")
             {
-                finalFace.value+=eff.effectValues[0];
+                finalFace.value += eff.effectValues[0];
                 finalFace.mySprites.Add(Resources.Load<Sprite>("Images/Dice_augmented.png"));
+            }
+            else if (eff.nameEffect == "Cursed")
+            {
+                finalFace.value += eff.effectValues[0];
+                finalFace.mySprites.Add(Resources.Load<Sprite>("Images/Dice_cursed.png"));
             }
             // Effets de tests
             else if (eff.nameEffect == "Heals_If_Threshold")
@@ -99,19 +108,21 @@ public class Dice
         }
         
         if (aFace.faceName != null) { finalFace.mySprites.Add(Resources.Load<Sprite>("Images/Dice_blue.png")); }
-        finalFace.mySprites.Reverse();
+        finalFace.mySprites.Reverse(); finalFace.alreadySummarized = true;
         return finalFace;
     }
 
     public int GetEffectPriority(string nameEff)
     {
         int returnValue = 0;
-        if (new List<string> { "Hit" }.Contains(nameEff)) { returnValue = -2; }
-        else if (new List<string> { "Weakening","Vulnerability" }.Contains(nameEff)) { returnValue = -1; }
+        if (new List<string> { "Hit" }.Contains(nameEff)) { returnValue = -1; }
         // Effects under 0 have no importance in ordering
         else if (new List<string> { "Transform" }.Contains(nameEff)) { returnValue = 1; }
         else if (new List<string> { "Weak", "Strength" }.Contains(nameEff)) { returnValue = 2; }
-        else if (new List<string> { "Heals_If_Threshold" }.Contains(nameEff)) { returnValue = 3; }
+        else if (new List<string> { "Cursed" }.Contains(nameEff)) { returnValue = 3; }
+        else if (new List<string> { "Heals_If_Threshold" }.Contains(nameEff)) { returnValue = 4; }
+        // Effects upper 100 have no importance in ordering
+        else if (new List<string> { "Weakening", "Vulnerability" }.Contains(nameEff)) { returnValue = 100; }
 
         return returnValue;
     }

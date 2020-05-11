@@ -9,7 +9,12 @@ public class Effect
     public List<int> effectValues; // list length depends on the effect
     public string rangeEffect;
 
-    public Effect(string name, List<int> values, string range) { nameEffect = name; effectValues = values; rangeEffect = range; }
+    public Effect(string name, List<int> values, string range)
+    {
+        nameEffect = name;
+        if (values != null) { effectValues = new List<int>(); values.ForEach(x => effectValues.Add(x)); }
+        rangeEffect = range;
+    }
     public Effect(string name, int theDuration) { nameEffect = name; duration = theDuration; }
 
     public Effect(Effect eff)

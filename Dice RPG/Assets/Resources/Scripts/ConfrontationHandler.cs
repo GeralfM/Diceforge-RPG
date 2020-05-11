@@ -24,7 +24,8 @@ public class ConfrontationHandler : MonoBehaviour
     public GameObject playerMainRoll;
     public GameObject playerSecondRoll;
     public GameObject enemyMainRoll;
-    
+    public GameObject enemyOtherRolls;
+
     public GameObject diceFacePrefab;
 
     public GameObject attackButton;
@@ -74,6 +75,7 @@ public class ConfrontationHandler : MonoBehaviour
         DisplayRoll(playerMainRoll, false);
         DisplayRoll(playerSecondRoll, false);
         DisplayRoll(enemyMainRoll, false);
+        enemyOtherRolls.GetComponent<ObjectDisplayer>().Hide();
 
         thePlayer.ReduceConditionDuration(); enemy.ReduceConditionDuration();
         thePlayer.DisplayConditions(); enemy.DisplayConditions();
@@ -115,7 +117,11 @@ public class ConfrontationHandler : MonoBehaviour
         }
         
         DisplayRoll(playerAttacking ? playerMainRoll : enemyMainRoll, true, att[0]);
-        if (att.Count==2) { DisplayRoll(playerSecondRoll, true, att[1]); };
+        if (att.Count==2) // Il faudra factoriser le code pour le joueur ET pour l'ennemi
+        {
+            if (attacker == thePlayer) { DisplayRoll(playerSecondRoll, true, att[1]); }
+            if (attacker == enemy) { enemyOtherRolls.GetComponent<ObjectDisplayer>().DisplayDice( new Dice(att.GetRange(1,att.Count-1)) ) ; }
+        }; 
 
         if (attValues.Sum() > 0) { defendant.takeHit(attValues.Sum()); }
         if (healValues.Sum() > 0) { attacker.Heal(healValues.Sum()); }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+using System.Linq;
+
 public class ObjectDisplayer : MonoBehaviour
 {
     public GameObject basicPrefab;
@@ -24,6 +26,7 @@ public class ObjectDisplayer : MonoBehaviour
 
         Hide();
         toBeDisplayed = aList;
+        aList.Sort(delegate (Item a, Item b) { return ItemOrderComparison(a, b); } );
 
         int count=0;
         foreach (Item elt in aList)
@@ -63,7 +66,11 @@ public class ObjectDisplayer : MonoBehaviour
                     newObject.transform.Find("RarityGem").GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/Gem_"+ elt.myInfo.myRarity + ".png");
                     newObject.transform.Find("RarityGem").gameObject.SetActive(true);
                 }
-
+                if (elt.myInfo.cursed) {
+                    GameObject target = (!isUpgraded) ? newObject.transform.Find("CurseSymbol").gameObject : newObject.transform.Find("ItemUpgradePrefab").Find("CurseSymbol").gameObject;
+                    target.SetActive(true);
+                }
+                
                 newObject.SetActive(true);
 
                 displayedList.Add(newObject);
@@ -74,6 +81,7 @@ public class ObjectDisplayer : MonoBehaviour
     public void DisplayDice(Dice dice)
     {
         bool isUpgraded = basicPrefab.name == "ImprovedBuyGroup";
+        List<int> coordinates;
         Hide();
 
         int count = 0;
@@ -81,10 +89,12 @@ public class ObjectDisplayer : MonoBehaviour
         {
             DiceFace finalFace = dice.getFaceSummary(face);
 
+            coordinates = getFaceCoordinates(count, (int)rowLength, dice.faceSplits);
+
             GameObject newObject = Instantiate(basicPrefab, new Vector3(0, 0, -1), Quaternion.identity);
             newObject.transform.SetParent(basicPrefab.transform.parent);
             newObject.transform.localScale = basicPrefab.transform.localScale;
-            newObject.transform.localPosition = basicPrefab.transform.localPosition + new Vector3(0 + (count % rowLength) * xStep, 0 - (int)(count / rowLength) * yStep, 0);
+            newObject.transform.localPosition = basicPrefab.transform.localPosition + new Vector3(0 + coordinates[0] * xStep, 0 - coordinates[1] * yStep, 0);
             if (newObject.GetComponent<InteractableElt>() != null) { newObject.GetComponent<InteractableElt>().myFaceRef = face; } // for upgradeHandler
 
             // Test dans le cas d'un superprefab Upgrade ou d'un ConditionDice
@@ -123,6 +133,22 @@ public class ObjectDisplayer : MonoBehaviour
             count++;
         }
     }
+    public List<int> getFaceCoordinates(int count, int rowLen, List<int> breaklines)
+    {
+        int x; int y;
+        List<int> accubreak = new List<int>();
+
+        if (breaklines != null)
+            {foreach (int elt in breaklines)
+                { if (count >= elt) { accubreak.Add(elt); }}
+            }
+
+        y = (int)(count / rowLength) + accubreak.Count;
+        x = ( count - ( (accubreak.Count>0)?accubreak.Max():0 ) ) % rowLen;
+
+        return new List<int> { x, y };
+    }
+
     public void Hide()
     {
         foreach (GameObject elt in displayedList)
@@ -144,11 +170,34 @@ public class ObjectDisplayer : MonoBehaviour
         righArrow.GetComponent<Button>().interactable = (page + 1) * limit < toBeDisplayed.Count; 
     }
 
+    public int ItemOrderComparison(Item a, Item b)
+    {
+        if(a.myInfo.myName != b.myInfo.myName) { return a.myInfo.myName.CompareTo(b.myInfo.myName); }
+        else
+        {
+            Dictionary<Item, int> d = new Dictionary<Item, int>();
+            foreach(Item x in new List<Item> { a, b })
+            {
+                switch (x.myInfo.myRarity)
+                {
+                    case null:
+                        d.Add(x, 3); break;
+                    case "Rare":
+                        d.Add(x, 2); break;
+                    case "Epic":
+                        d.Add(x, 1); break;
+                    case "Legendary":
+                        d.Add(x, 0);break;
+                }
+            }
+            return d[a].CompareTo(d[b]);
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        //List<Item> zbluh = new List<Item> { new Item(), new Item(), new Item() };
-        //DisplayItemCollection(zbluh);
+        
     }
 
     // Update is called once per frame
