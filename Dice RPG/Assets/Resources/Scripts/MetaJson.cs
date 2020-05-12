@@ -14,6 +14,18 @@ public class MetaJsonItems
     public List<ItemContent> myItems;
 }
 
+//[System.Serializable]
+//public class MetaJsonCounters
+//{
+//public List<CounterContent> myCounters;
+//}
+
+//[System.Serializable]
+//public class MetaJsonTriggers
+//{
+//public List<TriggerContent> myTriggers;
+//}
+
 public class MetaJson
 {
     public Dictionary<string, CharacterContent> allMobs = new Dictionary<string, CharacterContent>();

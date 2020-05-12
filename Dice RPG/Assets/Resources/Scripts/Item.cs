@@ -13,14 +13,12 @@ public class Item
     public Item(ItemContent content)
     {
         myInfo = new ItemContent(content);
+        
+        myDice = new Dice(myInfo.faceNames, myInfo.faceValues, myInfo.faceEffects);
+        myDice.myItem = this;
 
-        if(myInfo.faceValues != null)
-        {
-            myDice = new Dice(myInfo.faceValues, myInfo.faceEffects);
-            myDice.myItem = this;
-        }
         if(myInfo.effect != null) { myEffects.Add( new Effect(myInfo.effect, myInfo.effectValues, myInfo.effectRange) ); }
-
+        
         myInfo.improved = 0;
     }
     public void SetOwner(Player master)
@@ -32,7 +30,7 @@ public class Item
     public void SetCurse()
     {
         myInfo.cursed = true;
-        myDice.myFaces[0].effects.Add(new Effect("Cursed", new List<int> { -3 }, "Face")); 
-        myDice.myFaces[myDice.myFaces.Count-1].effects.Add(new Effect("Cursed", new List<int> { 3 }, "Face"));
+        myDice.myFaces[0].effects.Add(new Effect("Cursed", new List<int> { -3 }, "face")); 
+        myDice.myFaces[myDice.myFaces.Count-1].effects.Add(new Effect("Cursed", new List<int> { 3 }, "face"));
     }
 }

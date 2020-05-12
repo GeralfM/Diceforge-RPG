@@ -35,7 +35,9 @@ public class EquipSlot : MonoBehaviour
             equippedItem = null;
 
             thePlayer.UpdateVisualInfo();
-            GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/UI_Mask.png");
+
+            GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/Slot_"+slotName+".png");
+            
             this.transform.Find("RarityGem").gameObject.SetActive(false);
             this.transform.Find("CurseSymbol").gameObject.SetActive(false);
 
@@ -45,6 +47,7 @@ public class EquipSlot : MonoBehaviour
 
     public void DisplayDice(bool display)
     {
+        
         if (equippedItem != null && equippedItem.myDice != null)
         {
             if (display) { diceDisplayer.GetComponent<ObjectDisplayer>().DisplayDice(equippedItem.myDice); }

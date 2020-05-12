@@ -53,11 +53,11 @@ public class UpgradeHandler : MonoBehaviour
         List<Item> toBeDisplayed = new List<Item>();
         foreach(Item it in thePlayer.myInventory )
         {
-            if (!(UpgradeTab.activeSelf && it.myDice.myFaces.Count == 0)) { toBeDisplayed.Add(it); }
+            if (!(UpgradeTab.activeSelf && it.myInfo.myType != "Weapon")) { toBeDisplayed.Add(it); }
         }
-        foreach(EquipSlot slot in new List<EquipSlot> { thePlayer.myHead, thePlayer.myLeftHand, thePlayer.myRightHand, thePlayer.myBody })
+        foreach(EquipSlot slot in new List<EquipSlot> { thePlayer.myHead, thePlayer.myLeftHand, thePlayer.myRightHand, thePlayer.myBody, thePlayer.myNecklace })
         {
-            if (slot.equippedItem != null && !(UpgradeTab.activeSelf && slot.equippedItem.myDice.myFaces.Count == 0)) { toBeDisplayed.Add(slot.equippedItem); }
+            if (slot.equippedItem != null && !(UpgradeTab.activeSelf && slot.equippedItem.myInfo.myType != "Weapon")) { toBeDisplayed.Add(slot.equippedItem); }
         }
 
         myItemDisplayer.page = 0;
@@ -173,7 +173,7 @@ public class UpgradeHandler : MonoBehaviour
 
     public Dice GenerateUpgrades( DiceFace toUpgrade )
     {
-        Dice improvedDice = new Dice(new List<int>(), new List<string>());
+        Dice improvedDice = new Dice(null, new List<int>(), new List<string>());
         improvedDice.myItem = currentlySelectedItem.myItemRef;
 
         // Adding 1 : solution by default
@@ -258,7 +258,7 @@ public class UpgradeHandler : MonoBehaviour
     public void SellItem()
     {
         // Check if equiped
-        foreach(EquipSlot slot in new List<EquipSlot> { thePlayer.myHead, thePlayer.myLeftHand, thePlayer.myRightHand, thePlayer.myBody })
+        foreach(EquipSlot slot in new List<EquipSlot> { thePlayer.myHead, thePlayer.myLeftHand, thePlayer.myRightHand, thePlayer.myBody, thePlayer.myNecklace })
             { if(slot.equippedItem == currentlySelectedItem.myItemRef)
                 { slot.UnequipItem();
                     GameObject.Find("Background").GetComponent<GameHandler>().DisplayInventory(false);
@@ -292,7 +292,7 @@ public class UpgradeHandler : MonoBehaviour
             foreach (Item elt in thePlayer.myInventory)
             { if (elt.myInfo.myName == currentlySelectedItem.myItemRef.myInfo.myName && elt.myInfo.myRarity == currentlySelectedItem.myItemRef.myInfo.myRarity)
                 { meltCollection.Add(elt); } }
-            foreach (EquipSlot slot in new List<EquipSlot> { thePlayer.myHead, thePlayer.myLeftHand, thePlayer.myRightHand, thePlayer.myBody })
+            foreach (EquipSlot slot in new List<EquipSlot> { thePlayer.myHead, thePlayer.myLeftHand, thePlayer.myRightHand, thePlayer.myBody, thePlayer.myNecklace })
             { if (slot.equippedItem != null && slot.equippedItem.myInfo.myName == currentlySelectedItem.myItemRef.myInfo.myName && slot.equippedItem.myInfo.myRarity == currentlySelectedItem.myItemRef.myInfo.myRarity)
                 { meltCollection.Add(slot.equippedItem); } }
 
@@ -337,7 +337,7 @@ public class UpgradeHandler : MonoBehaviour
         toMelt.ForEach(x => nbCurse += x.myInfo.cursed ? 1 : 0);
         if( Random.Range(0f,1f) < nbCurse/3f ) { melted.myItemRef.SetCurse(); }
         // Check if equiped
-        foreach (EquipSlot slot in new List<EquipSlot> { thePlayer.myHead, thePlayer.myLeftHand, thePlayer.myRightHand, thePlayer.myBody })
+        foreach (EquipSlot slot in new List<EquipSlot> { thePlayer.myHead, thePlayer.myLeftHand, thePlayer.myRightHand, thePlayer.myBody, thePlayer.myNecklace })
         {
             if (toMelt.Contains(slot.equippedItem))
             {

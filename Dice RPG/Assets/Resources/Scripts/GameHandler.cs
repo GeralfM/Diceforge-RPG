@@ -29,6 +29,7 @@ public class GameHandler : MonoBehaviour
     public GameObject leftHand;
     public GameObject rightHand;
     public GameObject body;
+    public GameObject necklace;
     public GameObject playerConditionsTab;
 
     public GameObject cheatCodeButton;
@@ -88,7 +89,7 @@ public class GameHandler : MonoBehaviour
     }
     public void TerminatePlayer()
     {
-        foreach (EquipSlot elt in new List<EquipSlot> { thePlayer.myHead, thePlayer.myLeftHand, thePlayer.myRightHand, thePlayer.myBody }) { elt.UnequipItem(); }
+        foreach (EquipSlot elt in new List<EquipSlot> { thePlayer.myHead, thePlayer.myLeftHand, thePlayer.myRightHand, thePlayer.myBody, thePlayer.myNecklace }) { elt.UnequipItem(); }
         thePlayer.myConditions = new List<Effect>();
         thePlayer.DisplayConditions();
         DisplayInventory(false);
@@ -154,6 +155,7 @@ public class GameHandler : MonoBehaviour
         thePlayer.myLeftHand = leftHand.GetComponent<EquipSlot>();
         thePlayer.myRightHand = rightHand.GetComponent<EquipSlot>();
         thePlayer.myBody = body.GetComponent<EquipSlot>();
+        thePlayer.myNecklace = necklace.GetComponent<EquipSlot>();
 
         thePlayer.myConditionsDisplayer = playerConditionsTab.GetComponent<ObjectDisplayer>();
 
@@ -169,7 +171,7 @@ public class GameHandler : MonoBehaviour
 
     public void CheatCode()
     {
-        foreach (string elt in new List<string> { "Sword", "Axe", "Leather Armor", "Glasses", "Wand of healing", "Sting of weakening" })
+        foreach (string elt in new List<string> { "Sword", "Axe", "Leather Armor", "Glasses", "Wand of healing", "Sting of weakening", "Amulet of fury" })
         {
             Item newItem = new Item(myData.allItems[elt]); 
             thePlayer.AddToInventory(newItem);

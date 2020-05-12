@@ -100,18 +100,28 @@ public class ConfrontationHandler : MonoBehaviour
         SetPlayerChoices(false);
 
         List<DiceFace> att = attacker.getAttack();
+        int multiplyValue = 1;
         List<int> attValues = new List<int> { 0 };
         List<int> selfDmgValues = new List<int> { 0 };
         List<int> healValues = new List<int> { 0 }; // s'il y a de plus en plus de possibilités, un dictionnaire pourrait s'avérer nécessaire
 
+        // APPLYING FACE MODIFIERS
+        foreach (DiceFace aFace in att)
+        {
+            foreach (Effect eff in aFace.effects)
+            {
+                if (eff.nameEffect == "Multiply") { multiplyValue *= aFace.value; }
+            }
+        }
         // APPLYING BASIC HIT
         foreach (DiceFace aFace in att) {
-            foreach(Effect eff in aFace.effects)
+            aFace.multiplicator *= multiplyValue; // A surveiller de près
+            foreach (Effect eff in aFace.effects)
             {
-                if (eff.nameEffect == "Heal") { healValues.Add(eff.effectValues[0]); }
+                if (eff.nameEffect == "Heal") { healValues.Add(eff.effectValues[0] * aFace.multiplicator); }
                 else if (eff.nameEffect == "Hit") {
-                    if (aFace.value >0) { attValues.Add(aFace.value); }
-                    else if (aFace.value < 0) {  selfDmgValues.Add(-aFace.value); }
+                    if (aFace.GetFinalValue() > 0) { attValues.Add(aFace.GetFinalValue()); }
+                    else if (aFace.GetFinalValue() < 0) { selfDmgValues.Add(-aFace.GetFinalValue()); }
                 }
             }
         }
@@ -158,7 +168,7 @@ public class ConfrontationHandler : MonoBehaviour
             newObject.transform.localPosition = new Vector3(0, 0, 0);
             newObject.name = "RollView";
 
-            newObject.transform.Find("Text").GetComponent<Text>().text = face.value + "";
+            newObject.transform.Find("Text").GetComponent<Text>().text = (face.faceName != null)? face.faceName: face.value + "";
             foreach (Sprite aSpr in face.mySprites)
             {
                 GameObject newLayer = Instantiate(newObject.transform.Find("DiceLayer").gameObject);

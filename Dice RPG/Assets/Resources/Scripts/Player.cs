@@ -19,6 +19,7 @@ public class Player : Character
     public EquipSlot myLeftHand;
     public EquipSlot myRightHand;
     public EquipSlot myBody;
+    public EquipSlot myNecklace;
 
     public Player()
     {
@@ -27,7 +28,7 @@ public class Player : Character
         myInfo.pv = 20;
         myInfo.gold = 100;
 
-        myBaseAttackDice = new Dice(new List<int> { 0 }, new List<string> { "Hit" });
+        myBaseAttackDice = new Dice(null, new List<int> { 0 }, new List<string> { "Hit" });
         myBaseAttackDice.myOwner = this;
     }
 
@@ -49,6 +50,8 @@ public class Player : Character
                 }
             }
         }
+
+        if(myNecklace.equippedItem != null) { values.Add(myNecklace.equippedItem.myDice.rollDice()); }
         return values;
     }
     public override void takeHit(int value)
@@ -91,6 +94,16 @@ public class Player : Character
     {
         EquipSlot target = null;
 
+        // check constraints
+        switch (elt.myInfo.equipConstraint)
+        {
+            case "Single one-handed":
+                if (myLeftHand.equippedItem != null && myLeftHand.equippedItem.myInfo.nbHands == 2) { myLeftHand.UnequipItem(); }
+                else if(myRightHand.equippedItem != null) { myRightHand.UnequipItem(); }
+                break;
+        }
+
+        // determine target
         if (elt.myInfo.myType == "Weapon")
         {
             if (elt.myInfo.nbHands == 1) // il faut ajouter le test comme quoi un item sans faces <= 6 ne peut pas être équipé en secondaire !
@@ -113,13 +126,34 @@ public class Player : Character
                 if(myBody.equippedItem != null) { myBody.UnequipItem(); }
                 target = myBody;
             }
-            if (elt.myInfo.target == "Head") {
+            else if (elt.myInfo.target == "Head") {
                 if (myHead.equippedItem != null) { myHead.UnequipItem(); }
                 target = myHead;
             }
+            else if (elt.myInfo.target == "Necklace")
+            {
+                if (myNecklace.equippedItem != null) { myNecklace.UnequipItem(); }
+                target = myNecklace;
+            }
         }
+        
+        if (target != null) {
 
-        if (target != null) { EquipItem(elt, target); }
+            foreach (EquipSlot slot in new List<EquipSlot> { myHead, myLeftHand, myRightHand, myBody, myNecklace })
+            {
+                if (slot.equippedItem != null && slot.equippedItem.myInfo.equipConstraint != null)
+                {
+                    switch (slot.equippedItem.myInfo.equipConstraint)
+                    {
+                        case "Single one-handed":
+                            if (elt.myInfo.nbHands == 2 || target == myRightHand) { slot.UnequipItem(); }
+                            break;
+                    }
+                }
+            }
+
+            EquipItem(elt, target);
+        }
         return (target != null);
     }
     public void EquipItem(Item elt, EquipSlot slot)
@@ -130,7 +164,7 @@ public class Player : Character
     }
     public void BlockSlot(EquipSlot slot, bool isBlocked) // only visually for now
     {
-        slot.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/" + ( isBlocked ? "BlackCross" : "UI_Mask" ) + ".png");
+        slot.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/" + ( isBlocked ? "BlackCross" : "Slot_RightHand" ) + ".png");
     }
 
     public void UpdateVisualInfo()

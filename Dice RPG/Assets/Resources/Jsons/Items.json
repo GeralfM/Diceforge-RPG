@@ -66,6 +66,18 @@
 		"faceValues":["1","1","1","1","1"],
 		"faceEffects":["","","","Weakening","Weakening"],
 		"effect":"Hit"
+		},
+		{
+		"myName":"Amulet of fury",
+		"myType":"Equipment",
+		"myDescription":"AMULET OF FURY\nMultiply your rolls... Risky !\nCan only be used with a single one-handed weapon",
+		"target":"Necklace",
+		"goldValue":"100",
+		"faceNames":["x2","x2","x-1","x-1"],
+		"faceValues":["2","2","-1","-1"],
+		"effect":"Multiply",
+		"effectRange":"item",
+		"equipConstraint":"Single one-handed"
 		}
 	]
 }

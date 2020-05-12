@@ -19,7 +19,7 @@ public class Character
         myInfo.pv = myInfo.pvMax;
 
         if (myInfo.faceValues != null) {
-            myBaseAttackDice = new Dice(myInfo.faceValues, myInfo.faceEffects);
+            myBaseAttackDice = new Dice(null, myInfo.faceValues, myInfo.faceEffects);
             myBaseAttackDice.faceSplits = myInfo.faceSplits;
 
             myBaseAttackDice.myFaces.ForEach(x => x.effects.Add( new Effect("Hit", null, null) ));

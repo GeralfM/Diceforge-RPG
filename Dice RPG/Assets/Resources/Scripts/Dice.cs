@@ -15,20 +15,34 @@ public class Dice
 
     public System.Random ran = new System.Random();
 
-    public Dice(List<int> fValues, List<string> fEffects)
+    // May need to refactor all those constructors
+    public Dice(List<string> fNames, List<int> fValues, List<string> fEffects)
     {
-        for (int i=0; i<fValues.Count; i++)
+        if (fNames != null && fNames.Count>0)
         {
-            DiceFace newFace = new DiceFace(fValues[i]);
-            if(fEffects.Count>0 && fEffects[i]!="") { newFace.effects.Add(new Effect(fEffects[i], null, null)); }
-            myFaces.Add(newFace);
+            for (int i = 0; i < fNames.Count; i++)
+            {
+                DiceFace newFace = new DiceFace(fNames[i]);
+                newFace.value = fValues[i];
+                myFaces.Add(newFace);
+            }
+        }
+        else if (fValues != null)
+        {
+            for (int i = 0; i < fValues.Count; i++)
+            {
+                DiceFace newFace = new DiceFace(fValues[i]);
+                if (fEffects.Count > 0 && fEffects[i] != "") { newFace.effects.Add(new Effect(fEffects[i], null, null)); }
+                myFaces.Add(newFace);
+            }
         }
     }
-    public Dice(List<DiceFace> faces) { myFaces = faces; }
-    public Dice(List<string> nameFaces)
+    public Dice(List<string> nameFaces) // constructor for spell or effect dices, may be redundant with previous
     {
         for (int i = 0; i < nameFaces.Count; i++) { myFaces.Add(new DiceFace(nameFaces[i])); }
     }
+    public Dice(List<DiceFace> faces) { myFaces = faces; } // contructor for temporary dice
+    
 
     public DiceFace rollFromRange(int idmin, int idmax) { return getFaceSummary(myFaces[Random.Range(idmin, idmax)]);  }
     public DiceFace rollDice(){ return getFaceSummary(myFaces[Random.Range(0, myFaces.Count)]); }
@@ -62,6 +76,7 @@ public class Dice
     public DiceFace getCopyFaceSummary(DiceFace aFace)
     {
         DiceFace finalFace = new DiceFace(aFace.value);
+        finalFace.faceName = aFace.faceName;
 
         //Get all effects that apply to the face : global, from item and from face
         List<Effect> allEffects = new List<Effect>();
@@ -105,10 +120,11 @@ public class Dice
                 finalFace.effects.Add(new Effect(eff.nameEffect, null, null));
                 finalFace.mySprites.Add( Resources.Load<Sprite>("Images/Dice_" + eff.nameEffect.ToLower() + ".png") );
             }
+            else { finalFace.effects.Add(new Effect(eff.nameEffect, null, null)); }
         }
         
         if (aFace.faceName != null) { finalFace.mySprites.Add(Resources.Load<Sprite>("Images/Dice_blue.png")); }
-        finalFace.mySprites.Reverse(); finalFace.alreadySummarized = true;
+        finalFace.mySprites.Reverse(); finalFace.alreadySummarized = true; 
         return finalFace;
     }
 
