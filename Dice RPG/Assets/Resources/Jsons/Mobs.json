@@ -30,6 +30,19 @@
 		"presenceRate":"100",
 		"lootChoices":"2",
 		"lootValue":"50"
+		},
+		{
+		"myName":"Rat doctor",
+		"pvMax":"7",
+		"faceValues":["1","2","3","1","2","3"],
+		"faceEffects":["","","","","","","",""],
+		"faceSplits":["3"],
+		"levelAppear":"10",
+		"presenceRate":"15",
+		"lootChoices":"2",
+		"lootValue":"35",
+		"unlocked":"false",
+		"immunities":["LightPoison"]
 		}
 	]
 }

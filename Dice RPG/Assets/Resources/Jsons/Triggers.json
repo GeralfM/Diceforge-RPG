@@ -1,3 +1,75 @@
 {
-	
+	"myTriggers":[
+		{
+			"ID":"C-1",
+			"triggerName":"Kill_Rat",
+			"effectNames":["Increment_counter"],
+			"effectValues":["1f"],
+			"effectData":["Kill_Rat_session"]
+		},
+		{
+			"ID":"CU-1",
+			"triggerName":"Kill_Rat",
+			"conditionNames":["Counter>=threshold"],
+			"conditionValues":["10f"],
+			"conditionData":["Kill_Rat_session"],
+			"effectNames":["Activate","Deactivate","Commentary"],
+			"effectData":["CG-1","CU-1","Don't ... don't get bitten."]
+		},
+		{
+			"ID":"CU-2",
+			"triggerName":"Kill_Slime",
+			"effectNames":["Activate","Deactivate","Commentary"],
+			"effectData":["CG-2","CU-2","Slime acid. Good. We were getting low."]
+		},
+		{
+			"ID":"CU-3",
+			"triggerName":"Kill_Rat pack",
+			"conditionNames":["Counter>=threshold"],
+			"conditionValues":["10f"],
+			"conditionData":["Kill_Rat_session"],
+			"effectNames":["Activate","Deactivate","Commentary"],
+			"effectData":["CG-3","CU-3","So many ... I remember they were so many ... one bite ... that's all it took."]
+		},
+		{
+			"ID":"CG-1",
+			"triggerName":"Kill_Rat",
+			"effectNames":["Pool_commentary"],
+			"effectValues":["5f","5f","5f","5f"],
+			"effectData":["I ... dislike ... rats.",
+				"Do you ever feel like, after all the rats you've killed, they should stop coming?",
+				"If only we could get rid of this blight ...",
+				"Are you okay? You didn't get bitten, did you?"]
+		},
+		{
+			"ID":"CG-2",
+			"triggerName":"Kill_Slime",
+			"effectNames":["Pool_commentary"],
+			"effectValues":["5f","5f","5f","5f"],
+			"effectData":["Sometimes they crawl up the canalisations topside ... It never ends well.",
+				"Be careful ... The acid can mar a face beyond recognition.",
+				"I don't like parting with it much, but the acid is in high demand from the alchemists topside, and we need the coin.",
+				"Here, let me gather the components on this one."]
+		},
+		{
+			"ID":"CG-3",
+			"triggerName":"Kill_Rat pack",
+			"effectNames":["Pool_commentary"],
+			"effectValues":["5f","5f","5f","5f"],
+			"effectData":["There's always more ... It never stops ...",
+				"Many pelts are still pristine. We may get good gold for these.",
+				"There's one on m...!\nOh, thank you.",
+				"Are you okay? You didn't get bitten, did you?"]
+		},
+		{
+			"ID":"CG-4",
+			"triggerName":"Kill_Rat doctor",
+			"effectNames":["Pool_commentary"],
+			"effectValues":["100f/3","100f/3","100f/3"],
+			"effectData":["One less. Good.",
+				"To think there are humans beneath that mask ...",
+				"I wonder. How did the doctor turn into this?"]
+		}
+
+	]
 }

@@ -14,10 +14,11 @@ public class Item
     {
         myInfo = new ItemContent(content);
         
-        myDice = new Dice(myInfo.faceNames, myInfo.faceValues, myInfo.faceEffects);
+        myDice = new Dice(myInfo.faceNames, myInfo.faceValues, myInfo.faceEffects, myInfo.faceEffectsValues); 
         myDice.myItem = this;
+        if (myDice.myFaces.Count == 0) { myDice = null; }
 
-        if(myInfo.effect != null) { myEffects.Add( new Effect(myInfo.effect, myInfo.effectValues, myInfo.effectRange) ); }
+        if (myInfo.effect != null) { myEffects.Add( new Effect(myInfo.effect, -1, myInfo.effectRange, myInfo.effectValues) ); }
         
         myInfo.improved = 0;
     }
@@ -30,7 +31,7 @@ public class Item
     public void SetCurse()
     {
         myInfo.cursed = true;
-        myDice.myFaces[0].effects.Add(new Effect("Cursed", new List<int> { -3 }, "face")); 
-        myDice.myFaces[myDice.myFaces.Count-1].effects.Add(new Effect("Cursed", new List<int> { 3 }, "face"));
+        myDice.myFaces[0].effects.Add(new Effect("Cursed", -1, "face", new List<int> { -3 })); 
+        myDice.myFaces[myDice.myFaces.Count-1].effects.Add(new Effect("Cursed", -1, "face", new List<int> { 3 }));
     }
 }

@@ -39,6 +39,7 @@ public class JsonFileReader
         {
             response += reader.ReadLine();
         }
+        reader.Close();
         return response;
     }
 
@@ -48,6 +49,7 @@ public class JsonFileReader
         FileStream stream = File.Create(path);
         byte[] contentBytes = new UTF8Encoding(true).GetBytes(content);
         stream.Write(contentBytes, 0, contentBytes.Length);
+        stream.Close();
     }
 
 }

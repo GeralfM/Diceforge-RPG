@@ -9,6 +9,7 @@ public class GameHandler : MonoBehaviour
     public HealingHandler myHealingHandler;
     public UpgradeHandler myUpgradeHandler;
     public LootHandler myLootHandler;
+    public LoreHandler myLoreHandler;
     public MetaJson myData;
     public Player thePlayer;
 
@@ -40,7 +41,8 @@ public class GameHandler : MonoBehaviour
     void Start()
     {
         myData = new MetaJson();
-        
+
+        myLoreHandler.myData = myData; myLoreHandler.InitializeLore();
         myCombatHandler.allMobs = myData.allMobs;
         myLootHandler.allItems = myData.allItems; myLootHandler.GeneratePoolItems(); myLootHandler.GeneratePoolItemsShop();
         NewGame();
@@ -89,6 +91,8 @@ public class GameHandler : MonoBehaviour
     }
     public void TerminatePlayer()
     {
+        myCombatHandler.Interrupt();
+
         foreach (EquipSlot elt in new List<EquipSlot> { thePlayer.myHead, thePlayer.myLeftHand, thePlayer.myRightHand, thePlayer.myBody, thePlayer.myNecklace }) { elt.UnequipItem(); }
         thePlayer.myConditions = new List<Effect>();
         thePlayer.DisplayConditions();
@@ -169,12 +173,17 @@ public class GameHandler : MonoBehaviour
         thePlayer.UpdateVisualInfo();
     }
 
+    public void ReinitSession()
+    {
+        myLoreHandler.ResetLore();
+        TerminatePlayer();
+    }
+
     public void CheatCode()
     {
-        foreach (string elt in new List<string> { "Sword", "Axe", "Leather Armor", "Glasses", "Wand of healing", "Sting of weakening", "Amulet of fury" })
+        foreach (ItemContent elt in myData.allItems.Values)
         {
-            Item newItem = new Item(myData.allItems[elt]); 
-            thePlayer.AddToInventory(newItem);
+            if (elt.unlocked) { thePlayer.AddToInventory(new Item(myData.allItems[elt.myName])); }
         }
         thePlayer.DisplayInventory();
         cheatCodeButton.SetActive(false);

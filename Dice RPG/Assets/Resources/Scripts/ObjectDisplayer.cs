@@ -84,10 +84,13 @@ public class ObjectDisplayer : MonoBehaviour
         List<int> coordinates;
         Hide();
 
-        int count = 0;
-        foreach (DiceFace face in dice.myFaces)
+        List<DiceFace> simulation = dice.GetAllFinalFaces();
+        int count = 0; int countMax = dice.myFaces.Count-1;
+        while(count <= countMax)
+        //foreach (DiceFace face in dice.myFaces)
         {
-            DiceFace finalFace = dice.getFaceSummary(face);
+            //DiceFace finalFace = dice.getFaceSummary(face);
+            DiceFace face = dice.myFaces[count]; DiceFace finalFace = simulation[count];
 
             coordinates = getFaceCoordinates(count, (int)rowLength, dice.faceSplits);
 

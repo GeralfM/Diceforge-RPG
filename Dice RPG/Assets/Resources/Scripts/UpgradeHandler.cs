@@ -173,7 +173,7 @@ public class UpgradeHandler : MonoBehaviour
 
     public Dice GenerateUpgrades( DiceFace toUpgrade )
     {
-        Dice improvedDice = new Dice(null, new List<int>(), new List<string>());
+        Dice improvedDice = new Dice(null, new List<int>(), new List<string>(), null);
         improvedDice.myItem = currentlySelectedItem.myItemRef;
 
         // Adding 1 : solution by default

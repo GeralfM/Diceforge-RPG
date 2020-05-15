@@ -77,6 +77,14 @@ public class ConfrontationHandler : MonoBehaviour
         DisplayRoll(enemyMainRoll, false);
         enemyOtherRolls.GetComponent<ObjectDisplayer>().Hide();
 
+        // Check for end turn effects
+        foreach(Effect cond in attacker.myConditions)
+        {
+            if ( cond.nameEffect == "LightPoison") { attacker.myInfo.pv -= 1; }
+        }
+        displayPV(enemy.myInfo.pv, false);
+        displayPV(thePlayer.myInfo.pv, true);
+
         thePlayer.ReduceConditionDuration(); enemy.ReduceConditionDuration();
         thePlayer.DisplayConditions(); enemy.DisplayConditions();
 
@@ -138,16 +146,18 @@ public class ConfrontationHandler : MonoBehaviour
         if (selfDmgValues.Sum() > 0) { attacker.takeHit(selfDmgValues.Sum()); }
 
         // NOW APPLYING EFFECTS
+        Character target = null;
         foreach (DiceFace aFace in att)
         {
+            if(aFace.GetFinalValue() > 0) { target = defendant; } else if (aFace.GetFinalValue() <= 0) { target = attacker; }
             foreach (Effect eff in aFace.effects)
             {
-                if (aFace.value > 0 && eff.nameEffect == "Weakening") { defendant.AddCondition(new Effect("Weak", 2)); }
-                else if (aFace.value > 0 && eff.nameEffect == "Vulnerability")
-                { Effect newEff = new Effect("Vulnerable", new List<int> { 1 }, "character"); newEff.duration = -2; defendant.AddCondition(newEff); }
+                if (aFace.GetFinalValue() != 0 && eff.nameEffect == "Weakening") { target.AddCondition(new Effect("Weak", 2, "character", null)); }
+                else if (aFace.GetFinalValue() != 0 && eff.nameEffect == "Vulnerability") { target.AddCondition(new Effect("Vulnerable", -2, "character", new List<int> { 1 })); }
+                else if (aFace.GetFinalValue() != 0 && eff.nameEffect == "LightPoison") { target.AddCondition(new Effect("LightPoison", 2 * eff.effectValues[0], "characterStats", new List<int> { 1 })); }
             }
         }
-        defendant.DisplayConditions();
+        attacker.DisplayConditions(); defendant.DisplayConditions();
         enemyDiceDetail.GetComponent<ObjectDisplayer>().DisplayDice(enemy.myBaseAttackDice);
 
         displayPV(defendant.myInfo.pv, !playerAttacking);
@@ -207,7 +217,7 @@ public class ConfrontationHandler : MonoBehaviour
         levelConfront++;
 
         foreach(string name in allMobs.Keys)
-            { if(allMobs[name].levelAppear == levelConfront) { mobPool.AddElement(name, allMobs[name].presenceRate); } }
+            { if(allMobs[name].levelAppear == levelConfront && allMobs[name].unlocked) { mobPool.AddElement(name, allMobs[name].presenceRate); } }
     }
 
     public Character ChooseEnemy()
@@ -221,5 +231,17 @@ public class ConfrontationHandler : MonoBehaviour
         return theEnemy;
     }
 
-    
+    // UTILITAIRES
+
+    public void Interrupt()
+    {
+        StopAllCoroutines();
+
+        DisplayRoll(playerMainRoll, false);
+        DisplayRoll(playerSecondRoll, false);
+        DisplayRoll(enemyMainRoll, false);
+        enemyOtherRolls.GetComponent<ObjectDisplayer>().Hide();
+
+        GetComponent<GameHandler>().currentScene.SetActive(false);
+    }
 }

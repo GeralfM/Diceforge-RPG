@@ -9,7 +9,7 @@ public class DiceFace
 
     public int upgradeCost;
     public List<Effect> effects = new List<Effect>(); // only used in getFaceSummary for now
-    public List<Sprite> mySprites = new List<Sprite> { Resources.Load<Sprite>("Images/Dice_nothing.png") };
+    public List<Sprite> mySprites = new List<Sprite> { Resources.Load<Sprite>("Images/Dice_Nothing.png") };
 
     public string faceName; // for loot dice only, now adding necklace...
     public bool alreadySummarized = false;
@@ -49,6 +49,9 @@ public class DiceFace
                 break;
             case "Strength":
                 returnDescr = "STRONG :\n\nDice rolls are higher";
+                break;
+            case "LightPoison":
+                returnDescr = "LIGHT POISON :\n\nLoses 1 life point at the end of turn";
                 break;
         }
         return returnDescr;

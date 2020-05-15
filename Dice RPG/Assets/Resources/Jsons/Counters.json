@@ -1,8 +1,12 @@
 {
 	"myCounters":[
 		{
-			"nameCounter":"Kill_Rat",
+			"nameCounter":"Kill_Rat_session",
 			"count":"0"
+		},
+		{
+			"nameCounter":"Activated_events",
+			"content":["C-1","CU-1","CU-2","CU-3","CG-4"]
 		}
 	]
 }

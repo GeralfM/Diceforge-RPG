@@ -7,6 +7,8 @@ using System.Linq;
 
 public class LootHandler : MonoBehaviour
 {
+    public GameObject followerTab;
+
     public ObjectDisplayer myLootDiceDisplayer;
     public ObjectDisplayer myLootChoiceDisplayer;
 
@@ -33,6 +35,9 @@ public class LootHandler : MonoBehaviour
 
     public void InitializeLoot(Character monster)
     {
+        followerTab.SetActive(false);
+        GameObject.Find("Background").GetComponent<LoreHandler>().ExecuteFromTrigger("Kill_"+monster.myInfo.myName, followerTab );
+
         myLootDiceDisplayer.DisplayDice(lootDice);
     
         List<DiceFace> selected = lootDice.rollDistinctFaces(monster.myInfo.lootChoices);
@@ -92,17 +97,13 @@ public class LootHandler : MonoBehaviour
             switch (rarityItem)
             {
                 case "Rare":
-                    buff = new Effect("Strength", new List<int> { 1 }, "item"); break;
+                    buff = new Effect("Strength", -1, "item", new List<int> { 1 }); break;
                 case "Epic":
-                    buff = new Effect("Strength", new List<int> { 2 }, "item"); break;
+                    buff = new Effect("Strength", -1, "item", new List<int> { 2 }); break;
                 case "Legendary":
-                    buff = new Effect("Strength", new List<int> { 5 }, "item"); break;
+                    buff = new Effect("Strength", -1, "item", new List<int> { 5 }); break;
             }
-            if (buff != null)
-            {
-                buff.duration = -1;
-                newItem.myEffects.Add(buff);
-            }
+            if (buff != null) { newItem.myEffects.Add(buff); }
         }
         else if (newItem.myInfo.mySubType == "Armor") // Modifications uniques aux armures
         {
@@ -137,12 +138,18 @@ public class LootHandler : MonoBehaviour
 
     public void GeneratePoolItems()
     {
-        foreach(string itemName in allItems.Keys) { itemPool.AddElement(itemName, 1f / allItems[itemName].goldValue); }
+        foreach(string itemName in allItems.Keys)
+        {
+            if(allItems[itemName].unlocked) itemPool.AddElement(itemName, 1f / allItems[itemName].goldValue);
+        }
     }
     public void GeneratePoolItemsShop()
     {
         List<int> allPrices = new List<int>();
-        allItems.Values.ToList().ForEach(x => allPrices.Add(x.goldValue));
+        foreach(ItemContent elt in allItems.Values)
+        {
+            if (elt.unlocked) { allPrices.Add(elt.goldValue); }
+        }
 
         float meanValues = (float)allPrices.Average(); float accu = 0;
         allPrices.ForEach(x => accu += Mathf.Pow(meanValues - x, 2));
@@ -151,9 +158,12 @@ public class LootHandler : MonoBehaviour
         new List<string> { "Low", "Middle", "High" }.ForEach(x => shopPools.Add(x, new WeightedBag()));
         foreach(string elt in allItems.Keys)
         {
-            if(allItems[elt].goldValue < meanValues - stdValues / 3) { shopPools["Low"].AddElement(elt, 1f / allItems[elt].goldValue); }
-            else if (allItems[elt].goldValue < meanValues + stdValues / 3) { shopPools["Middle"].AddElement(elt, 1f / allItems[elt].goldValue); }
-            else { shopPools["High"].AddElement(elt, 1f / allItems[elt].goldValue); }
+            if (allItems[elt].unlocked)
+            {
+                if (allItems[elt].goldValue < meanValues - stdValues / 3) { shopPools["Low"].AddElement(elt, 1f / allItems[elt].goldValue); }
+                else if (allItems[elt].goldValue < meanValues + stdValues / 3) { shopPools["Middle"].AddElement(elt, 1f / allItems[elt].goldValue); }
+                else { shopPools["High"].AddElement(elt, 1f / allItems[elt].goldValue); }
+            }
         }
     }
 

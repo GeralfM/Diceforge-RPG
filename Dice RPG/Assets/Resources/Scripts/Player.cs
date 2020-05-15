@@ -28,7 +28,7 @@ public class Player : Character
         myInfo.pv = 20;
         myInfo.gold = 100;
 
-        myBaseAttackDice = new Dice(null, new List<int> { 0 }, new List<string> { "Hit" });
+        myBaseAttackDice = new Dice(null, new List<int> { 0 }, new List<string> { "Hit" }, null);
         myBaseAttackDice.myOwner = this;
     }
 
@@ -51,7 +51,7 @@ public class Player : Character
             }
         }
 
-        if(myNecklace.equippedItem != null) { values.Add(myNecklace.equippedItem.myDice.rollDice()); }
+        if(myNecklace.equippedItem != null && myNecklace.equippedItem.myDice!= null) { values.Add(myNecklace.equippedItem.myDice.rollDice()); }
         return values;
     }
     public override void takeHit(int value)
@@ -64,13 +64,13 @@ public class Player : Character
     {
         List<Effect> allEffects = new List<Effect>(); allEffects.AddRange(myConditions);
         // From equipment
-        foreach (EquipSlot elt in new List<EquipSlot> { myHead, myLeftHand, myRightHand, myBody })
+        foreach (EquipSlot elt in new List<EquipSlot> { myHead, myLeftHand, myRightHand, myBody, myNecklace })
         {
             if(elt.equippedItem != null && elt.equippedItem.myEffects != null)
             {
                 foreach(Effect eff in elt.equippedItem.myEffects)
                 {
-                    if( eff.rangeEffect == "character") { allEffects.Add(eff); }
+                    if ( eff.rangeEffect == "character") { allEffects.Add(eff); }
                 }
             }
         }
@@ -97,9 +97,8 @@ public class Player : Character
         // check constraints
         switch (elt.myInfo.equipConstraint)
         {
-            case "Single one-handed":
-                if (myLeftHand.equippedItem != null && myLeftHand.equippedItem.myInfo.nbHands == 2) { myLeftHand.UnequipItem(); }
-                else if(myRightHand.equippedItem != null) { myRightHand.UnequipItem(); }
+            case "Single weapon":
+                if (myRightHand.equippedItem != null) { myRightHand.UnequipItem(); }
                 break;
         }
 
@@ -145,8 +144,8 @@ public class Player : Character
                 {
                     switch (slot.equippedItem.myInfo.equipConstraint)
                     {
-                        case "Single one-handed":
-                            if (elt.myInfo.nbHands == 2 || target == myRightHand) { slot.UnequipItem(); }
+                        case "Single weapon":
+                            if (target == myRightHand) { slot.UnequipItem(); }
                             break;
                     }
                 }

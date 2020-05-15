@@ -10,6 +10,8 @@ public class ItemContent
     public string mySubType;
     public string myDescription;
 
+    public bool unlocked = true;
+
     public int goldValue;
     public string myRarity; // not from json for now
     public int improved;
@@ -22,6 +24,7 @@ public class ItemContent
     public List<string> faceNames;
     public List<int> faceValues;
     public List<string> faceEffects;
+    public List<int> faceEffectsValues;
 
     // EQUIPMENT
     public string target;
@@ -34,9 +37,10 @@ public class ItemContent
     public ItemContent(ItemContent toCopy)
     {
         myName = toCopy.myName; myType = toCopy.myType; mySubType = toCopy.mySubType; myDescription = toCopy.myDescription;
+        unlocked = toCopy.unlocked;
         goldValue = toCopy.goldValue; improved = toCopy.improved; cursed = toCopy.cursed; equipConstraint = toCopy.equipConstraint;
         nbHands = toCopy.nbHands;
-        faceNames = toCopy.faceNames; faceValues = toCopy.faceValues; faceEffects = toCopy.faceEffects; // Careful with those lists...
+        faceNames = toCopy.faceNames; faceValues = toCopy.faceValues; faceEffects = toCopy.faceEffects; faceEffectsValues = toCopy.faceEffectsValues;// Careful with those lists...
 
         target = toCopy.target; damageReduction = toCopy.damageReduction; effect = toCopy.effect; effectValues = toCopy.effectValues; effectRange = toCopy.effectRange;
     }

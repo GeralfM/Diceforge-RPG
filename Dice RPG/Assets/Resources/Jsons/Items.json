@@ -70,14 +70,25 @@
 		{
 		"myName":"Amulet of fury",
 		"myType":"Equipment",
-		"myDescription":"AMULET OF FURY\nMultiply your rolls... Risky !\nCan only be used with a single one-handed weapon",
+		"myDescription":"AMULET OF FURY\nMultiply your rolls... Risky !\nCan only be used with a single weapon",
 		"target":"Necklace",
 		"goldValue":"100",
 		"faceNames":["x2","x2","x-1","x-1"],
 		"faceValues":["2","2","-1","-1"],
 		"effect":"Multiply",
 		"effectRange":"item",
-		"equipConstraint":"Single one-handed"
+		"equipConstraint":"Single weapon"
+		},
+		{
+		"myName":"Fang of pestilence",
+		"myType":"Equipment",
+		"myDescription":"FANG OF PESTILENCE\nAdds Light Poisoning to lowest faces",
+		"target":"Necklace",
+		"goldValue":"50",
+		"effect":"LightPoison_If_Lowest",
+		"effectValues":["3"],
+		"effectRange":"character",
+		"unlocked":"false"
 		}
 	]
 }

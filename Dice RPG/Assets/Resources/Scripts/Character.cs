@@ -19,10 +19,10 @@ public class Character
         myInfo.pv = myInfo.pvMax;
 
         if (myInfo.faceValues != null) {
-            myBaseAttackDice = new Dice(null, myInfo.faceValues, myInfo.faceEffects);
+            myBaseAttackDice = new Dice(null, myInfo.faceValues, myInfo.faceEffects, myInfo.faceEffectsValues);
             myBaseAttackDice.faceSplits = myInfo.faceSplits;
 
-            myBaseAttackDice.myFaces.ForEach(x => x.effects.Add( new Effect("Hit", null, null) ));
+            myBaseAttackDice.myFaces.ForEach(x => x.effects.Add( new Effect("Hit", -1, null, null) ));
             myBaseAttackDice.myOwner = this;
         }
     }
@@ -35,7 +35,7 @@ public class Character
             myInfo.pvMax *= 2; myInfo.pv *= 2;
             myInfo.lootValue *= 2;
 
-            Effect buff = new Effect("Strength", new List<int> { 2 }, "character");
+            Effect buff = new Effect("Strength", -1, "character", new List<int> { 2 });
             buff.duration = -1;
             myConditions.Add(buff);
         }
@@ -70,7 +70,8 @@ public class Character
 
     public virtual List<Effect> GetAllEffects() // Does only conditions for now
     {
-        List<Effect> allEffects = new List<Effect>(); allEffects.AddRange(myConditions);
+        List<Effect> allEffects = new List<Effect>();
+        foreach(Effect eff in myConditions) { if (eff.rangeEffect == "character") { allEffects.Add(eff); } }
         return allEffects;
     }
     public int SearchEffectValue(string nameEff)
@@ -90,7 +91,7 @@ public class Character
             if(cond.nameEffect == eff.nameEffect)
             {
                 toBeAdded = false;
-                if(new List<string> { "Weak" }.Contains(eff.nameEffect)) // Stackable dans le temps
+                if(new List<string> { "Weak", "LightPoison" }.Contains(eff.nameEffect)) // Stackable dans le temps
                 {
                     cond.duration += eff.duration;
                 }
@@ -100,7 +101,7 @@ public class Character
                 }
             }
         }
-        if (toBeAdded) { myConditions.Add(eff); }
+        if (toBeAdded && (myInfo.immunities == null || !myInfo.immunities.Contains(eff.nameEffect)) ) { myConditions.Add(eff); }
     }
     public void ReduceConditionDuration()
     {
@@ -135,7 +136,7 @@ public class Character
             {
                 DiceFace aFace = new DiceFace(eff.nameEffect);
 
-                if(new List<string> { "Weak" }.Contains(eff.nameEffect)) { aFace.value = eff.duration; }
+                if(new List<string> { "Weak", "LightPoison" }.Contains(eff.nameEffect)) { aFace.value = eff.duration; }
                 if (new List<string> { "Vulnerable" }.Contains(eff.nameEffect)) { aFace.value = eff.effectValues[0]; }
 
                 myDiceConditions.myFaces.Add(aFace);
