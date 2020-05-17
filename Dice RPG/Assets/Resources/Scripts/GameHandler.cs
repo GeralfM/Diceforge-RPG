@@ -19,6 +19,7 @@ public class GameHandler : MonoBehaviour
     public GameObject healScene;
     public GameObject upgradeScene;
     public GameObject deathScene;
+    public GameObject eventScene;
 
     public GameObject playerInventory;
     public GameObject menu;
@@ -37,6 +38,10 @@ public class GameHandler : MonoBehaviour
 
     public WeightedBag sceneProb;
 
+    public GameObject followerIcon;
+    public bool specialEvent = false;
+    public string nextScene;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -45,6 +50,7 @@ public class GameHandler : MonoBehaviour
         myLoreHandler.myData = myData; myLoreHandler.InitializeLore();
         myCombatHandler.allMobs = myData.allMobs;
         myLootHandler.allItems = myData.allItems; myLootHandler.GeneratePoolItems(); myLootHandler.GeneratePoolItemsShop();
+        SetFollower();
         NewGame();
     }
 
@@ -57,6 +63,7 @@ public class GameHandler : MonoBehaviour
     {
         if (currentScene != null) { currentScene.SetActive(false); }
         deathScene.SetActive(false);
+        myLootHandler.followerTab.transform.Find("TextBackground").Find("Text").GetComponent<Text>().text = "";
         sceneProb = new WeightedBag();
 
         thePlayer = new Player();
@@ -70,9 +77,8 @@ public class GameHandler : MonoBehaviour
         //currentScene = upgradeScene;
         //upgradeScene.SetActive(true);
         //myUpgradeHandler.InitUpgradeScene();
-        currentScene = confrontScene;
-        confrontScene.SetActive(true);
-        myCombatHandler.InitNewConfront();
+        nextScene = "Confront";
+        CheckSpecialEvent();
     }
     public void EndOfConfrontation(bool playerDead)
     {
@@ -103,33 +109,43 @@ public class GameHandler : MonoBehaviour
     {
         if(currentScene == lootScene)
         {
-            string nextScene = sceneProb.Draw(true);
+            nextScene = sceneProb.Draw(true);
+            if(nextScene == "nothing") { nextScene = "Confront"; }
+            myLootHandler.followerTab.transform.Find("TextBackground").Find("Text").GetComponent<Text>().text = "";
             lootScene.SetActive(false);
-
-            switch (nextScene)
-            {
-                case "Heal":
-                    sceneProb.AddWeight("Heal", -0.2f);
-                    currentScene = healScene;
-                    healScene.SetActive(true);
-                    myHealingHandler.InitializeScene(thePlayer); break;
-                case "Upgrade":
-                    sceneProb.AddWeight("Upgrade", -0.2f);
-                    currentScene = upgradeScene;
-                    upgradeScene.SetActive(true);
-                    myUpgradeHandler.InitUpgradeScene(); break;
-                case "nothing":
-                    currentScene = confrontScene;
-                    confrontScene.SetActive(true);
-                    myCombatHandler.InitNewConfront(); break;
-            }
         }
         else if(new List<GameObject> { healScene, upgradeScene }.Contains(currentScene))
         {
+            nextScene = "Confront";
             currentScene.SetActive(false);
-            currentScene = confrontScene;
-            confrontScene.SetActive(true);
-            myCombatHandler.InitNewConfront();
+        }
+        CheckSpecialEvent();
+    }
+    public void CheckSpecialEvent()
+    {
+        myLoreHandler.ExecuteFromTrigger("New_" + nextScene, null);
+        if (!specialEvent) { SetupNextScene(); }
+        else { eventScene.SetActive(true); currentScene = eventScene; myLoreHandler.SetupEventScene(); }
+    }
+    public void SetupNextScene()
+    {
+        specialEvent = false;
+        switch (nextScene)
+        {
+            case "Heal":
+                sceneProb.AddWeight("Heal", -0.2f);
+                currentScene = healScene;
+                currentScene.SetActive(true);
+                myHealingHandler.InitializeScene(thePlayer); break;
+            case "Upgrade":
+                sceneProb.AddWeight("Upgrade", -0.2f);
+                currentScene = upgradeScene;
+                currentScene.SetActive(true);
+                myUpgradeHandler.InitUpgradeScene(); break;
+            case "Confront":
+                currentScene = confrontScene;
+                currentScene.SetActive(true);
+                myCombatHandler.InitNewConfront(); break;
         }
     }
 
@@ -173,9 +189,31 @@ public class GameHandler : MonoBehaviour
         thePlayer.UpdateVisualInfo();
     }
 
+    // SESSION-LEVEL TOOLS
+    public void SelectNewFollower()
+    {
+        int followerChoice = Random.Range(1, 4); // Il va falloir gérer la multiplicité des icônes
+        followerIcon.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/Follower_" + followerChoice + ".png");
+
+        myData.allCounters["Selected_Follower"].count = followerChoice;
+        myData.StoreCounters();
+    }
+    public void SetFollower()
+    {
+        int followerChoice = myData.allCounters["Selected_Follower"].count;
+        if (followerChoice == 0) { SelectNewFollower(); }
+        else { followerIcon.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/Follower_" + followerChoice + ".png"); }
+    }
+
     public void ReinitSession()
     {
+        currentScene.SetActive(false);
+
         myLoreHandler.ResetLore();
+        myCombatHandler.allMobs = myData.allMobs;
+        myLootHandler.allItems = myData.allItems;
+
+        SelectNewFollower();
         TerminatePlayer();
     }
 

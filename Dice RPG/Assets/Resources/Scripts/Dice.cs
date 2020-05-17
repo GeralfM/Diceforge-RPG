@@ -130,8 +130,6 @@ public class Dice
         List<Effect> allEffects = new List<Effect>();
         allEffects.AddRange(aFace.effects);
         allEffects.AddRange(externalEffects);
-        //if (myItem != null && myItem.myEffects != null) { allEffects.AddRange(myItem.myEffects); }
-        //if (myOwner != null) { allEffects.AddRange(myOwner.GetAllEffects()); }
         
         if (allEffects.Count > 1)
         { allEffects.Sort(delegate (Effect a, Effect b) { return GetEffectPriority(a.nameEffect).CompareTo(GetEffectPriority(b.nameEffect)); }); }

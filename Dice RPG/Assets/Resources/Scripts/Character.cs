@@ -101,7 +101,13 @@ public class Character
                 }
             }
         }
-        if (toBeAdded && (myInfo.immunities == null || !myInfo.immunities.Contains(eff.nameEffect)) ) { myConditions.Add(eff); }
+        if (toBeAdded && (myInfo.immunities == null || !AnyImmunities(eff.nameEffect)) ) { myConditions.Add(eff); }
+    }
+    public bool AnyImmunities(string effect)
+    {
+        bool isImmune = false;
+        myInfo.immunities.ForEach(x => isImmune = isImmune || x.Contains(effect));
+        return isImmune;
     }
     public void ReduceConditionDuration()
     {
@@ -130,15 +136,24 @@ public class Character
         Dice myDiceConditions = new Dice(new List<string>());
         myDiceConditions.isConditionDice = true;
 
+        DiceFace aFace;
         foreach (Effect eff in myConditions)
         {
             if (eff.nameEffect != null && eff.nameEffect != "")
             {
-                DiceFace aFace = new DiceFace(eff.nameEffect);
+                aFace = new DiceFace(eff.nameEffect);
 
                 if(new List<string> { "Weak", "LightPoison" }.Contains(eff.nameEffect)) { aFace.value = eff.duration; }
                 if (new List<string> { "Vulnerable" }.Contains(eff.nameEffect)) { aFace.value = eff.effectValues[0]; }
 
+                myDiceConditions.myFaces.Add(aFace);
+            }
+        }
+        if (myInfo.immunities != null)
+        {
+            foreach (string name in myInfo.immunities)
+            {
+                aFace = new DiceFace("Immune" + name);
                 myDiceConditions.myFaces.Add(aFace);
             }
         }

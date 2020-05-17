@@ -267,6 +267,7 @@ public class UpgradeHandler : MonoBehaviour
 
         thePlayer.myInfo.gold += currentlySelectedItem.myItemRef.myInfo.goldValue / 2;
         thePlayer.UpdateVisualInfo();
+        DisplayItemsToBuy();
         DisplayItemCollection();
 
         NullifySelected();

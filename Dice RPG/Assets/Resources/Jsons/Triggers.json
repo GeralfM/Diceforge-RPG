@@ -8,6 +8,13 @@
 			"effectData":["Kill_Rat_session"]
 		},
 		{
+			"ID":"C-2",
+			"triggerName":"Kill_Rat pack",
+			"effectNames":["Increment_counter"],
+			"effectValues":["3f"],
+			"effectData":["Kill_Rat_session"]
+		},
+		{
 			"ID":"CU-1",
 			"triggerName":"Kill_Rat",
 			"conditionNames":["Counter>=threshold"],
@@ -69,6 +76,63 @@
 			"effectData":["One less. Good.",
 				"To think there are humans beneath that mask ...",
 				"I wonder. How did the doctor turn into this?"]
+		},
+		{
+			"ID":"HT-1",
+			"triggerName":"Kill_Rat pack",
+			"effectNames":["Pool_triggerEvent"],
+			"effectValues":["80f","20f"],
+			"effectData":["C-2","HT-2"]
+		},
+		{
+			"ID":"HT-2",
+			"triggerName":"Nothing",
+			"effectNames":["Increment_counter","Commentary"],
+			"effectValues":["1f"],
+			"effectData":["Kill_Rat_session","That still counts as one."]
+		},
+		{
+			"ID":"HT-3",
+			"triggerName":"Incremented_Kill_Rat_session",
+			"conditionNames":["Counter<threshold"],
+			"conditionValues":["10f"],
+			"conditionData":["Kill_Rat_session"],
+			"effectNames":["Commentary_Variable"],
+			"effectData":["10","[-]","[Param]Kill_Rat_session","[Concat]","."]
+		},
+		{
+			"ID":"HT-4",
+			"triggerName":"Incremented_Kill_Rat_session",
+			"conditionNames":["Counter>=threshold"],
+			"conditionValues":["10f"],
+			"conditionData":["Kill_Rat_session"],
+			"effectNames":["Activate","Activate","Deactivate","Deactivate","Commentary"],
+			"effectData":["C-2","HT-5","HT-1","HT-4","...\nHe is coming."]
+		},
+		{
+			"ID":"HT-5",
+			"triggerName":"New_Confront",
+			"effectNames":["Special_Event"],
+			"effectData":["Hector Tenrats","A gloomy figure is approaching..."]
+		},
+		{
+			"ID":"HT-5a",
+			"triggerName":"Nothing",
+			"effectNames":["Force_encounter"],
+			"effectData":["Rat doctor","Hector Tenrats"]
+		},
+		{
+			"ID":"HT-6",
+			"triggerName":"Killed_by_Hector Tenrats",
+			"effectNames":["Activate","Activate","Deactivate","Deactivate","Set_counter"],
+			"effectValues":["","","","0f"],
+			"effectData":["HT-1","HT-4","C-2","HT-5","Kill_Rat_session"]
+		},
+		{
+			"ID":"HT-7",
+			"triggerName":"Kill_Hector Tenrats",
+			"effectNames":["Force_loot","Unlock_item","Unlock_enemy","Activate","Deactivate_quest","Commentary"],
+			"effectData":["Fang of pestilence","Fang of pestilence","Rat doctor","CG-4","HT","Ah... I knew him once..."]
 		}
 
 	]

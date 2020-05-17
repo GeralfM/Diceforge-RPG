@@ -33,16 +33,16 @@
 		},
 		{
 		"myName":"Rat doctor",
-		"pvMax":"7",
-		"faceValues":["1","2","3","1","2","3"],
-		"faceEffects":["","","","","","","",""],
-		"faceSplits":["3"],
+		"pvMax":"14",
+		"faceValues":["1","2","3","4","5","6"],
+		"faceEffects":["LightPoison","","","","",""],
+		"faceEffectsValues":["3","","","","",""],
 		"levelAppear":"10",
 		"presenceRate":"15",
 		"lootChoices":"2",
 		"lootValue":"35",
 		"unlocked":"false",
-		"immunities":["LightPoison"]
+		"immunities":["Poison"]
 		}
 	]
 }

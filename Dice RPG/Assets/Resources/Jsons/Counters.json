@@ -6,7 +6,20 @@
 		},
 		{
 			"nameCounter":"Activated_events",
-			"content":["C-1","CU-1","CU-2","CU-3","CG-4"]
+			"content":["C-1","CU-1","CU-2","CU-3",
+				"HT-1","HT-2","HT-3","HT-4","HT-6","HT-7"]
+		},
+		{
+			"nameCounter":"Unlocked_enemies",
+			"content":[]
+		},
+		{
+			"nameCounter":"Unlocked_items",
+			"content":[]
+		},
+		{
+			"nameCounter":"Selected_Follower",
+			"count":["0"]
 		}
 	]
 }

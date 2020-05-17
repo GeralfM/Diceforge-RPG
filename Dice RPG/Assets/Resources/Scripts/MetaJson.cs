@@ -32,13 +32,23 @@ public class MetaJsonTriggers
 
 public class MetaJson
 {
-    public Dictionary<string, CharacterContent> allMobs = new Dictionary<string, CharacterContent>();
-    public Dictionary<string, ItemContent> allItems = new Dictionary<string, ItemContent>();
-    public Dictionary<string, CounterContent> allCounters = new Dictionary<string, CounterContent>();
-    public Dictionary<string, TriggerContent> allEvents = new Dictionary<string, TriggerContent>();
+    public Dictionary<string, CharacterContent> allMobs;
+    public Dictionary<string, ItemContent> allItems;
+    public Dictionary<string, CounterContent> allCounters;
+    public Dictionary<string, TriggerContent> allEvents;
 
     public MetaJson()
     {
+        ResetMyContent();
+    }
+
+    public void ResetMyContent()
+    {
+        allMobs = new Dictionary<string, CharacterContent>();
+        allItems = new Dictionary<string, ItemContent>();
+        allCounters = new Dictionary<string, CounterContent>();
+        allEvents = new Dictionary<string, TriggerContent>();
+
         // Load all mobs
         string loadedItem = JsonFileReader.LoadJsonAsResource("Jsons/Mobs");
         MetaJsonMobs loadedMobs = JsonUtility.FromJson<MetaJsonMobs>(loadedItem);
@@ -63,7 +73,6 @@ public class MetaJson
         // Load all counters, create file if not exists
         if (!System.IO.File.Exists(Application.persistentDataPath + "/Counters.json")) { ResetCountersFile(); }
         ReadCountersFile();
-
     }
 
     public void ResetCountersFile()

@@ -13,6 +13,7 @@ public class LootHandler : MonoBehaviour
     public ObjectDisplayer myLootChoiceDisplayer;
 
     public Dictionary<string, ItemContent> allItems;
+    public string forceLoot = null;
 
     public Player thePlayer;
     public Dice lootDice;
@@ -38,29 +39,37 @@ public class LootHandler : MonoBehaviour
         followerTab.SetActive(false);
         GameObject.Find("Background").GetComponent<LoreHandler>().ExecuteFromTrigger("Kill_"+monster.myInfo.myName, followerTab );
 
-        myLootDiceDisplayer.DisplayDice(lootDice);
-    
-        List<DiceFace> selected = lootDice.rollDistinctFaces(monster.myInfo.lootChoices);
-        
         List<Item> choices = new List<Item>();
-        foreach(DiceFace aFace in selected)
+        if (forceLoot == null || forceLoot == "")
         {
-            Item newItem = null;
-            switch (aFace.faceName)
-            {
-                case "GOLD":
-                    ItemContent content = new ItemContent(); content.myName = "Gold"; content.goldValue = monster.myInfo.lootValue;
-                    newItem = new Item(content);
-                    break;
-                case "ITEM":
-                    newItem = SpawnRandomItem( (monster.myInfo.myRarity == " - Champion")?"Rare":"Common" );
-                    newItem.SetOwner(thePlayer);
-                    break;
-            }
-            if (newItem.myInfo.myType == "Weapon" && Random.Range(0f, 1f) < 0.1f) { newItem.SetCurse(); }
-            choices.Add(newItem);
-        }
+            myLootDiceDisplayer.DisplayDice(lootDice);
 
+            List<DiceFace> selected = lootDice.rollDistinctFaces(monster.myInfo.lootChoices);
+
+            foreach (DiceFace aFace in selected)
+            {
+                Item newItem = null;
+                switch (aFace.faceName)
+                {
+                    case "GOLD":
+                        ItemContent content = new ItemContent(); content.myName = "Gold"; content.goldValue = monster.myInfo.lootValue;
+                        newItem = new Item(content);
+                        break;
+                    case "ITEM":
+                        newItem = SpawnRandomItem((monster.myInfo.myRarity == " - Champion") ? "Rare" : "Common");
+                        newItem.SetOwner(thePlayer);
+                        break;
+                }
+                if (newItem.myInfo.myType == "Weapon" && Random.Range(0f, 1f) < 0.1f) { newItem.SetCurse(); }
+                choices.Add(newItem);
+            }
+        }
+        else
+        {
+            Item newItem = new Item(allItems[forceLoot]); newItem.SetOwner(thePlayer);
+            choices.Add(newItem);
+            forceLoot = null;
+        }
         myLootChoiceDisplayer.DisplayItemCollection(choices);
     }
 
@@ -138,7 +147,8 @@ public class LootHandler : MonoBehaviour
 
     public void GeneratePoolItems()
     {
-        foreach(string itemName in allItems.Keys)
+        itemPool = new WeightedBag();
+        foreach (string itemName in allItems.Keys)
         {
             if(allItems[itemName].unlocked) itemPool.AddElement(itemName, 1f / allItems[itemName].goldValue);
         }
@@ -155,6 +165,7 @@ public class LootHandler : MonoBehaviour
         allPrices.ForEach(x => accu += Mathf.Pow(meanValues - x, 2));
         float stdValues = Mathf.Sqrt(accu / allPrices.Count);
 
+        shopPools = new Dictionary<string, WeightedBag>();
         new List<string> { "Low", "Middle", "High" }.ForEach(x => shopPools.Add(x, new WeightedBag()));
         foreach(string elt in allItems.Keys)
         {

@@ -44,8 +44,11 @@ public class Player : Character
                 if (elt.equippedItem != null)
                 {
                     DiceFace tryFace = elt.equippedItem.myDice.rollDice();
-                    if (elt == myRightHand && elt.equippedItem.myDice.GetMinValue()<=6)
-                        { while (tryFace.value > 6) { tryFace = elt.equippedItem.myDice.rollDice(); } }
+                    if (elt == myRightHand)
+                    {
+                        if (elt.equippedItem.myDice.GetMinValue() <= 6) { while (tryFace.value > 6) { tryFace = elt.equippedItem.myDice.rollDice(); } }
+                        else { tryFace = myBaseAttackDice.rollDice(); }
+                    }
                     values.Add(tryFace);
                 }
             }
@@ -62,7 +65,8 @@ public class Player : Character
 
     public override List<Effect> GetAllEffects() // all ACTIVE effects only !
     {
-        List<Effect> allEffects = new List<Effect>(); allEffects.AddRange(myConditions);
+        List<Effect> allEffects = new List<Effect>();
+        foreach (Effect eff in myConditions) { if (eff.rangeEffect == "character") { allEffects.Add(eff); } }
         // From equipment
         foreach (EquipSlot elt in new List<EquipSlot> { myHead, myLeftHand, myRightHand, myBody, myNecklace })
         {

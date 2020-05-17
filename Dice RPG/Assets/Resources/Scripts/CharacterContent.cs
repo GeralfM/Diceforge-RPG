@@ -29,6 +29,7 @@ public class CharacterContent
     {
         myName = toCopy.myName;
         pvMax = toCopy.pvMax; gold = toCopy.gold; unlocked = toCopy.unlocked;
+        //tant qu'aucun effet n'intervient directement sur les tableaux suivants, les informations de base sont protgégées
         faceValues = toCopy.faceValues; faceEffects = toCopy.faceEffects; faceEffectsValues = toCopy.faceEffectsValues; faceSplits = toCopy.faceSplits;
         levelAppear = toCopy.levelAppear; presenceRate = toCopy.presenceRate;
         lootChoices = toCopy.lootChoices; lootValue = toCopy.lootValue;

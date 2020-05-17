@@ -12,6 +12,7 @@ public class ConfrontationHandler : MonoBehaviour
     public WeightedBag mobPool = new WeightedBag();
     public Player thePlayer;
     public Character enemy;
+    public CharacterContent forceEncounter = null;
     public int levelConfront;
 
     public GameObject enemyPicture;
@@ -92,6 +93,8 @@ public class ConfrontationHandler : MonoBehaviour
         {
             thePlayer.EndCombatDurationEffect();
             GetComponent<GameHandler>().EndOfConfrontation(thePlayer.myInfo.pv <= 0);
+
+            if(thePlayer.myInfo.pv <= 0) { GetComponent<LoreHandler>().ExecuteFromTrigger("Killed_by_" + enemy.myInfo.myName, null); }
         }
         else { NewRound(); }
     }
@@ -222,9 +225,15 @@ public class ConfrontationHandler : MonoBehaviour
 
     public Character ChooseEnemy()
     {
-        string nameEnemy = mobPool.Draw(false);
+        Character theEnemy;
+        //Check if lore forced the encounter
+        if (forceEncounter == null || forceEncounter.myName == "")
+        {
+            string nameEnemy = mobPool.Draw(false);
+            theEnemy = new Character(allMobs[nameEnemy]);
+        }
+        else { theEnemy = new Character(forceEncounter); forceEncounter = null; }
 
-        Character theEnemy = new Character(allMobs[nameEnemy]);
         theEnemy.SetRarity(levelConfront);
         theEnemy.myConditionsDisplayer = enemyConditionsTab.GetComponent<ObjectDisplayer>();
 
@@ -243,5 +252,11 @@ public class ConfrontationHandler : MonoBehaviour
         enemyOtherRolls.GetComponent<ObjectDisplayer>().Hide();
 
         GetComponent<GameHandler>().currentScene.SetActive(false);
+    }
+
+    public void killEnemy()
+    {
+        enemy.takeHit(9999);
+        EndRound();
     }
 }
